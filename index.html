@@ -298,6 +298,7 @@
   var smoothedDb=-100, pState="idle", pBurstStart=0, pLastLoud=0, calibrating=false, calMax=-100, calEnd=0;
   // reference engine
   var refFixed=null, refHead=null, headLen=12, refLenFrames=0, phraseMs=0, ringFrames=[], armed=true, lastCountTime=-1e9, refractoryMs=900, refPlaying=false;
+  var matching=false, nextCountTime=0, lowSince=0, lastTick=0;
   var recState="needsRef", tempFrames=[], tempLevels=[], tempPcm=[], recStart=0, recTimerId=null;
   // shared audio
   var listening=false, recording=false;
@@ -503,7 +504,7 @@
     if(refAudio.paused){ refPlaying=true; refAudio.currentTime=0; refAudio.play(); playRefBtn.textContent="⏸ Stop"; }
     else { refAudio.pause(); }
   });
-  function endRefPlay(){ refPlaying=false; playRefBtn.textContent="▶ Play"; ringFrames=[]; armed=true; lastCountTime=performance.now(); }
+  function endRefPlay(){ refPlaying=false; playRefBtn.textContent="▶ Play"; ringFrames=[]; matching=false; nextCountTime=0; lowSince=0; lastTick=0; }
   refAudio.addEventListener("ended", endRefPlay);
   refAudio.addEventListener("pause", endRefPlay);
 
@@ -530,6 +531,7 @@
     if(mode==="reference" && !refFixed){ showErr("Record a reference first, or switch to the By pauses tab."); return; }
     if(!(await ensureMic())) return;
     smoothedDb=-100; pState="idle"; ringFrames=[]; armed=true; lastCountTime=-1e9; lastFeatureTime=0; lastEvalTime=0;
+    matching=false; nextCountTime=0; lowSince=0; lastTick=0;
     listening=true; micBtn.textContent="Stop"; micBtn.classList.add("on");
     statusText.textContent="listening"; dot.classList.add("live"); requestWake();
     listenLoop();
@@ -577,14 +579,23 @@
         inputState.textContent=loud2?"playing":"silent"; inputState.classList.toggle("on",loud2);
         lastFeatureTime=now;
       }
-      if(now-lastEvalTime>=EVAL_MS && ringFrames.length>=headLen){
-        var live=resampleFrames(ringFrames.slice(ringFrames.length-headLen),HN);
-        var score=dtwScore(live,refHead);
+      if(now-lastEvalTime>=EVAL_MS && ringFrames.length>=Math.max(8, Math.floor(refLenFrames*0.6))){
+        var score=dtwScore(resampleFrames(ringFrames,N),refFixed);
         matchLvl.style.width=(score*100)+"%";
         var hit=score>=matchThreshold; matchLvl.classList.toggle("hit",hit);
         matchState.textContent=Math.round(score*100)+"%"; matchState.classList.toggle("on",hit);
-        if(score<matchThreshold-0.07) armed=true;
-        if(armed && score>=matchThreshold && (now-lastCountTime)>refractoryMs){ count++; lastCountTime=now; armed=false; registerRep("last match "+Math.round(score*100)+"%"); }
+        if(!matching){
+          if(score>=matchThreshold){ matching=true; lowSince=0; count++; registerRep("match "+Math.round(score*100)+"%"); nextCountTime=now+phraseMs; lastTick=now; }
+        } else {
+          if(score<matchThreshold-0.12){
+            if(!lowSince) lowSince=now;
+            else if(now-lowSince>Math.min(900,phraseMs*0.4)){
+              matching=false;
+              if(now-lastTick>=phraseMs*0.85){ count++; registerRep("match "+Math.round(score*100)+"%"); lastTick=now; }
+            }
+          } else lowSince=0;
+          if(matching && now>=nextCountTime){ if(score>=matchThreshold-0.05){ count++; registerRep("match "+Math.round(score*100)+"%"); lastTick=now; } nextCountTime+=phraseMs; }
+        }
         lastEvalTime=now;
       }
     }
@@ -597,7 +608,7 @@
     countEl.classList.remove("bump"); void countEl.offsetWidth; countEl.classList.add("bump");
     lastrep.textContent=info; renderTally(); updateGoal();
   }
-  function resetCount(){ count=0; armed=true; lastCountTime=-1e9; pState="idle"; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
+  function resetCount(){ count=0; armed=true; lastCountTime=-1e9; pState="idle"; matching=false; nextCountTime=0; lowSince=0; lastTick=0; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
   function updateGoal(){
     var done=count>=goal, remaining=Math.max(0,goal-count);
     goalView.textContent=goal; goalNum.textContent=goal;
