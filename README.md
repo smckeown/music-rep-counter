@@ -70,6 +70,11 @@ Any reasonably current browser with microphone support (Chrome, Edge, Firefox, S
 
 ## Support
 
+I am not providing support for this app. It comes as is. However, you can contribute by:
+
+- making a suggestion or reporting a bug by opening an issue
+- sending a pull request
+
 If it saves you some counting and you'd like to buy me a coffee (add buy me a coffee link eventually if I launch this thing).
 
 ## FAQs
