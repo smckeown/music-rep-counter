@@ -1,10 +1,10 @@
-A small, private, browser-based tool that counts how many times you play a phrase while practising — so you can keep your eyes on the music instead of on a tally.
+A small, private, browser-based tool that counts how many times you play a phrase while practising, helping you to keep track when your mind starts wandering!
 
 **Live app:** https://smckeown.github.io/music-rep-counter/
 
 ## Why
 
-To get a passage properly learned, you need to play it through fluently a few times — three as a baseline, sometimes twenty before it really sticks. Counting in your head while concentrating on playing is a losing battle. This listens through your device's microphone and keeps the count for you.
+To get a passage properly learned, you need to play it through fluently multiple times. Repetition builds muscle memory. Maybe you want to play it three times, or twenty, or a hundred. The most difficult part of it is keeping track in your head while working through repetitions. This app listens through your device's microphone and keeps the count for you.
 
 ## Two ways to count
 
@@ -36,7 +36,7 @@ Either way, set your target with the **Goal** stepper, and **Reset count** is on
 
 ## Privacy
 
-This is the whole point, so it's worth being plain about:
+This app has been designed privacy-first. Everything stays in your browser:
 
 - **Nothing leaves your device.** Audio is analysed locally in the browser and is never recorded to a server, uploaded, or transmitted anywhere.
 - **No accounts, no tracking, no analytics, no ads.** The page makes no network calls at all — you can confirm that in your browser's developer tools.
@@ -70,11 +70,8 @@ Any reasonably current browser with microphone support (Chrome, Edge, Firefox, S
 
 ## Support
 
-If it saves you some counting and you'd like to buy me a coffee:
-
-<!-- Replace with your Ko-fi / Buy Me a Coffee link -->
-☕ _[tip jar link goes here]_
+If it saves you some counting and you'd like to buy me a coffee (add buy me a coffee link is unsupported)
 
 ## License
 
-MIT. Add a `LICENSE` file with the standard MIT text and your name if you'd like to make reuse explicit.
+This app is licensed under GPLv3. Enjoy!
