@@ -113,6 +113,10 @@
   .actions button{flex:1; padding:12px; border-radius:12px; border:1px solid var(--line);
     background:var(--bg3); color:var(--ink); font-size:14px; font-weight:600; cursor:pointer; transition:.15s}
   .actions button:hover{border-color:var(--brass-dim)}
+  .done{width:100%; padding:13px; border-radius:12px; border:1px solid var(--brass-dim);
+    background:var(--brass-soft); color:var(--brass); font-size:14px; font-weight:700; cursor:pointer;
+    transition:.15s; letter-spacing:.02em}
+  .done:hover{background:var(--brass); color:#1A1206; border-color:var(--brass)}
 
   .note{font-size:12.5px; color:var(--faint); text-align:center; line-height:1.5; padding:0 6px}
   .err{display:none; background:var(--brass-soft); border:1px solid var(--brass-dim); color:var(--ink);
@@ -151,8 +155,8 @@
     </div>
   </div>
 
-  <details>
-    <summary>Tuning <span class="chev">▾</span></summary>
+  <details id="settings">
+    <summary>Settings <span class="chev">▾</span></summary>
 
     <div class="ctl">
       <div class="goalstep">
@@ -188,6 +192,10 @@
         <button id="resetBtn">Reset count</button>
       </div>
       <div class="hint">Calibrate sets the threshold from your room's silence — stay quiet for ~2 seconds after tapping.</div>
+    </div>
+
+    <div class="ctl">
+      <button class="done" id="doneBtn">Done — back to counter</button>
     </div>
   </details>
 
@@ -377,6 +385,11 @@
     if(!running){ showErr("Start listening first, then calibrate."); return; }
     clearErr(); calibrating = true; calMax = -100; calEnd = performance.now() + 2000;
     statusText.textContent = "calibrating…";
+  });
+
+  $("doneBtn").addEventListener("click", function(){
+    $("settings").open = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   // ---- init ----
