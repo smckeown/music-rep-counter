@@ -21,75 +21,109 @@
     color:var(--ink); font-family:var(--sans);
     -webkit-font-smoothing:antialiased; min-height:100dvh;
     padding:max(18px,env(safe-area-inset-top)) 18px max(22px,env(safe-area-inset-bottom));
-    display:flex; flex-direction:column; gap:18px; max-width:520px; margin:0 auto;
+    display:flex; flex-direction:column; gap:14px; max-width:520px; margin:0 auto;
   }
+  .hidden{display:none !important}
+
+  /* tabs */
+  .tabs{display:flex; gap:6px; background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:5px}
+  .tab{flex:1; padding:11px 8px; border-radius:10px; border:none; background:transparent; color:var(--muted);
+    font-family:var(--sans); font-size:14px; font-weight:600; cursor:pointer; transition:.15s; letter-spacing:.01em}
+  .tab.active{background:var(--brass); color:#1A1206}
+  .tabhint{font-size:12.5px; color:var(--faint); text-align:center; line-height:1.45; padding:0 8px}
 
   /* top bar */
-  .bar{display:flex; align-items:center; justify-content:space-between}
+  .bar{display:flex; align-items:center; justify-content:space-between; gap:12px}
   .status{display:flex; align-items:center; gap:9px; font-size:13px; letter-spacing:.14em;
     text-transform:uppercase; color:var(--muted)}
   .dot{width:9px; height:9px; border-radius:50%; background:var(--faint); flex:none}
-  .dot.live{background:var(--brass); box-shadow:0 0 0 0 var(--brass-soft); animation:pulse 1.8s ease-out infinite}
-  .dot.hot{background:var(--brass); box-shadow:0 0 12px 2px rgba(226,161,76,.6)}
+  .dot.live{background:var(--brass); animation:pulse 1.8s ease-out infinite}
+  .dot.hot{background:var(--brass); box-shadow:0 0 12px 2px rgba(226,161,76,.6); animation:none}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(226,161,76,.4)}100%{box-shadow:0 0 0 12px rgba(226,161,76,0)}}
   .mic{appearance:none; border:1px solid var(--line); background:var(--bg2); color:var(--ink);
     font-family:var(--sans); font-size:14px; font-weight:600; padding:9px 16px; border-radius:999px;
-    cursor:pointer; transition:.15s; letter-spacing:.02em}
+    cursor:pointer; transition:.15s; letter-spacing:.02em; white-space:nowrap}
   .mic:hover{border-color:var(--brass-dim)}
   .mic.on{background:var(--brass); color:#1A1206; border-color:var(--brass)}
+  .mic:disabled{opacity:.4; cursor:not-allowed}
 
-  /* hero */
-  .hero{background:var(--bg2); border:1px solid var(--line); border-radius:22px;
-    padding:26px 24px 24px; text-align:center; position:relative; overflow:hidden}
-  .eyebrow{font-family:var(--serif); font-style:italic; font-size:15px; color:var(--brass);
-    letter-spacing:.02em; margin-bottom:2px}
-  .count{font-size:clamp(86px,30vw,150px); font-weight:800; line-height:.92; letter-spacing:-.03em;
-    font-variant-numeric:tabular-nums; transition:color .4s}
+  /* reference chip */
+  .refchip{display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:11px 14px; font-size:13px}
+  .refchip .meta{color:var(--muted)}
+  .refchip .meta b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
+  .refchip button{appearance:none; border:none; background:none; color:var(--brass); font-size:13px;
+    font-weight:600; cursor:pointer; font-family:var(--sans)}
+
+  /* record / review card */
+  .card{background:var(--bg2); border:1px solid var(--line); border-radius:22px; padding:24px 22px}
+  .card h1{font-family:var(--serif); font-size:22px; font-weight:600; letter-spacing:-.01em; margin-bottom:8px}
+  .card p{font-size:14.5px; color:var(--muted); line-height:1.55; margin-bottom:18px}
+  .recbtn{width:100%; padding:16px; border-radius:14px; border:1px solid var(--brass); background:var(--brass);
+    color:#1A1206; font-family:var(--sans); font-size:16px; font-weight:700; cursor:pointer; transition:.15s; letter-spacing:.01em}
+  .recbtn:hover{filter:brightness(1.06)}
+  .recbtn.stop{background:var(--bg3); color:var(--ink); border-color:var(--brass-dim)}
+  .rectimer{text-align:center; font-size:40px; font-weight:800; font-variant-numeric:tabular-nums; margin:6px 0 14px; letter-spacing:-.02em}
+  .recmeter{position:relative; height:14px; background:var(--bg3); border-radius:7px; overflow:hidden; margin-bottom:18px}
+  .recmeter .lvl{position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--brass); border-radius:7px}
+  .review audio{width:100%; margin:4px 0 16px; height:38px}
+  .review .pair{display:flex; gap:10px}
+  .review .pair button{flex:1; padding:14px; border-radius:13px; font-family:var(--sans); font-size:15px;
+    font-weight:700; cursor:pointer; transition:.15s; border:1px solid var(--line)}
+  .review .use{background:var(--brass); color:#1A1206; border-color:var(--brass)}
+  .review .redo{background:var(--bg3); color:var(--ink)}
+  .review .pair button:hover{filter:brightness(1.06)}
+  .tooshort{font-size:13px; color:var(--brass); margin-bottom:14px; line-height:1.5}
+
+  /* hero counter */
+  .hero{background:var(--bg2); border:1px solid var(--line); border-radius:22px; padding:24px 22px 20px; text-align:center; position:relative}
+  .eyebrow{font-family:var(--serif); font-style:italic; font-size:15px; color:var(--brass); letter-spacing:.02em; margin-bottom:2px}
+  .count{font-size:clamp(80px,28vw,140px); font-weight:800; line-height:.92; letter-spacing:-.03em; font-variant-numeric:tabular-nums; transition:color .4s}
   .count.bump{animation:bump .32s cubic-bezier(.2,1.4,.4,1)}
   @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
   .count.done{color:var(--sage)}
-  .goalline{margin-top:8px; font-size:14px; color:var(--muted); letter-spacing:.01em; min-height:18px}
+  .goalline{margin-top:8px; font-size:14px; color:var(--muted); min-height:18px}
   .goalline b{color:var(--ink); font-weight:600}
   .lastrep{margin-top:3px; font-size:12.5px; color:var(--faint); font-variant-numeric:tabular-nums; min-height:16px}
-
-  /* goal progress */
-  .track{margin-top:18px; height:6px; border-radius:99px; background:var(--bg3); overflow:hidden}
+  .track{margin-top:16px; height:6px; border-radius:99px; background:var(--bg3); overflow:hidden}
   .fill{height:100%; width:0; background:var(--brass); border-radius:99px; transition:width .35s ease}
   .fill.done{background:var(--sage)}
+  .resetfront{margin-top:16px; width:100%; padding:11px; border-radius:12px; border:1px solid var(--line);
+    background:transparent; color:var(--muted); font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer; transition:.15s; letter-spacing:.04em}
+  .resetfront:hover{border-color:var(--brass-dim); color:var(--ink)}
 
-  /* tally signature */
-  .tally{display:flex; flex-wrap:wrap; gap:14px 18px; align-items:flex-end; min-height:46px;
-    padding:4px 2px 0}
+  /* tally */
+  .tally{display:flex; flex-wrap:wrap; gap:14px 18px; align-items:flex-end; min-height:46px; padding:2px 2px 0; margin-top:16px}
   .grp{position:relative; display:flex; gap:6px; height:40px; align-items:center}
-  .grp .s{width:3px; height:34px; background:var(--brass); border-radius:2px; transform-origin:bottom;
-    animation:draw .28s ease both}
+  .grp .s{width:3px; height:34px; background:var(--brass); border-radius:2px; transform-origin:bottom; animation:draw .28s ease both}
   .grp.done .s{background:var(--sage)}
-  .grp .cross{position:absolute; top:50%; left:-3px; width:46px; height:3px; background:var(--brass);
-    border-radius:2px; transform:rotate(-24deg); transform-origin:left center; animation:draw .28s ease both}
+  .grp .cross{position:absolute; top:50%; left:-3px; width:46px; height:3px; background:var(--brass); border-radius:2px; transform-origin:left center; animation:drawx .28s ease both}
   .grp.done .cross{background:var(--sage)}
   @keyframes draw{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-  .grp .cross{animation-name:drawx}
   @keyframes drawx{from{transform:rotate(-24deg) scaleX(0)}to{transform:rotate(-24deg) scaleX(1)}}
   .tally-empty{color:var(--faint); font-size:13.5px; font-style:italic; font-family:var(--serif)}
 
-  /* live meter */
-  .panel{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:16px 16px 18px}
-  .panel h2{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
-    font-weight:600; margin-bottom:11px; display:flex; justify-content:space-between; align-items:center}
+  /* meters */
+  .panel{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:15px 16px 16px; margin-top:16px}
+  .panel.tight{margin-top:8px}
+  .panel h2{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600;
+    margin-bottom:10px; display:flex; justify-content:space-between; align-items:center}
   .panel h2 .state{color:var(--faint); letter-spacing:.04em}
-  .panel h2 .state.playing{color:var(--brass)}
+  .panel h2 .state.on{color:var(--brass)}
   .meter{position:relative; height:16px; background:var(--bg3); border-radius:8px; overflow:hidden}
-  .meter .lvl{position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--brass-dim);
-    border-radius:8px}
-  .meter .lvl.hot{background:var(--brass)}
+  .meter .lvl{position:absolute; left:0; top:0; bottom:0; width:0%; border-radius:8px; transition:width .05s linear}
+  .meter .lvl.input{background:var(--brass-dim)}
+  .meter .lvl.input.hot{background:var(--brass)}
+  .meter .lvl.match{background:var(--brass-dim)}
+  .meter .lvl.match.hit{background:var(--sage)}
   .meter .thr{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--ink); opacity:.85}
-  .meter .thr::after{content:"threshold"; position:absolute; top:-15px; left:50%; transform:translateX(-50%);
-    font-size:9px; letter-spacing:.08em; color:var(--muted); white-space:nowrap}
+  .meter .thr::after{content:attr(data-label); position:absolute; top:-15px; left:50%; transform:translateX(-50%);
+    font-size:9px; letter-spacing:.06em; color:var(--muted); white-space:nowrap}
 
-  /* controls */
-  details{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:0 16px}
-  summary{list-style:none; cursor:pointer; padding:15px 0; font-size:11px; letter-spacing:.16em;
-    text-transform:uppercase; color:var(--muted); font-weight:600; display:flex; justify-content:space-between}
+  /* settings */
+  details{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:0 16px; margin-top:16px}
+  summary{list-style:none; cursor:pointer; padding:15px 0; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--muted); font-weight:600; display:flex; justify-content:space-between}
   summary::-webkit-details-marker{display:none}
   summary .chev{transition:.2s; color:var(--faint)}
   details[open] summary .chev{transform:rotate(180deg)}
@@ -98,302 +132,479 @@
   .ctl label{font-size:14px; color:var(--ink)}
   .ctl .val{font-size:13px; color:var(--brass); font-variant-numeric:tabular-nums}
   .ctl .hint{font-size:12px; color:var(--faint); margin-top:5px; line-height:1.45}
-  input[type=range]{width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:99px;
-    background:var(--bg3); outline:none}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%;
-    background:var(--brass); cursor:pointer; border:3px solid var(--bg2)}
-  input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; background:var(--brass);
-    cursor:pointer; border:3px solid var(--bg2)}
+  input[type=range]{width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:99px; background:var(--bg3); outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--brass); cursor:pointer; border:3px solid var(--bg2)}
+  input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; background:var(--brass); cursor:pointer; border:3px solid var(--bg2)}
   .goalstep{display:flex; align-items:center; gap:14px}
-  .goalstep button{width:34px; height:34px; border-radius:10px; border:1px solid var(--line);
-    background:var(--bg3); color:var(--ink); font-size:20px; cursor:pointer; line-height:1}
+  .goalstep button{width:34px; height:34px; border-radius:10px; border:1px solid var(--line); background:var(--bg3); color:var(--ink); font-size:20px; cursor:pointer; line-height:1}
   .goalstep button:hover{border-color:var(--brass-dim)}
   .goalstep .g{font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; min-width:28px; text-align:center}
-  .actions{display:flex; gap:10px; margin-top:4px}
-  .actions button{flex:1; padding:12px; border-radius:12px; border:1px solid var(--line);
-    background:var(--bg3); color:var(--ink); font-size:14px; font-weight:600; cursor:pointer; transition:.15s}
-  .actions button:hover{border-color:var(--brass-dim)}
-  .done{width:100%; padding:13px; border-radius:12px; border:1px solid var(--brass-dim);
-    background:var(--brass-soft); color:var(--brass); font-size:14px; font-weight:700; cursor:pointer;
-    transition:.15s; letter-spacing:.02em}
+  .calbtn{width:100%; margin-top:11px; padding:11px; border-radius:11px; border:1px solid var(--line); background:var(--bg3);
+    color:var(--ink); font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer; transition:.15s}
+  .calbtn:hover{border-color:var(--brass-dim)}
+  .done{width:100%; padding:13px; border-radius:12px; border:1px solid var(--brass-dim); background:var(--brass-soft);
+    color:var(--brass); font-size:14px; font-weight:700; cursor:pointer; transition:.15s; letter-spacing:.02em}
   .done:hover{background:var(--brass); color:#1A1206; border-color:var(--brass)}
 
-  .note{font-size:12.5px; color:var(--faint); text-align:center; line-height:1.5; padding:0 6px}
-  .err{display:none; background:var(--brass-soft); border:1px solid var(--brass-dim); color:var(--ink);
-    border-radius:14px; padding:14px 16px; font-size:13.5px; line-height:1.5}
+  .note{font-size:12.5px; color:var(--faint); text-align:center; line-height:1.5; padding:0 6px; margin-top:4px}
+  .err{display:none; background:var(--brass-soft); border:1px solid var(--brass-dim); color:var(--ink); border-radius:14px; padding:14px 16px; font-size:13.5px; line-height:1.5}
   .err.show{display:block}
 
-  @media (prefers-reduced-motion:reduce){
-    *{animation-duration:.001s !important}
-    .dot.live{animation:none}
-  }
+  @media (prefers-reduced-motion:reduce){ *{animation-duration:.001s !important} .dot.live{animation:none} }
 </style>
 </head>
 <body>
+  <div class="tabs">
+    <button class="tab active" id="tabPauses" data-mode="pauses">By pauses</button>
+    <button class="tab" id="tabReference" data-mode="reference">By reference</button>
+  </div>
+  <div class="tabhint" id="tabHint">Counts a rep each time you pause briefly between repeats.</div>
+
   <div class="bar">
-    <div class="status"><span class="dot" id="dot"></span><span id="statusText">not listening</span></div>
+    <div class="status"><span class="dot" id="dot"></span><span id="statusText">ready</span></div>
     <button class="mic" id="micBtn">Start listening</button>
   </div>
 
   <div class="err" id="err"></div>
 
-  <div class="hero">
-    <div class="eyebrow">clean reps</div>
-    <div class="count" id="count">0</div>
-    <div class="goalline" id="goalline">goal <b id="goalView">3</b> · 3 to go</div>
-    <div class="lastrep" id="lastrep"></div>
-    <div class="track"><div class="fill" id="fill"></div></div>
+  <!-- reference chip -->
+  <div class="refchip hidden" id="refChip">
+    <span class="meta">Reference set · <b id="refLen">0.0s</b></span>
+    <button id="rerecBtn">Record again</button>
   </div>
 
-  <div class="tally" id="tally"><span class="tally-empty">your reps will tally up here</span></div>
-
-  <div class="panel">
-    <h2>Live input <span class="state" id="stateLabel">silent</span></h2>
-    <div class="meter">
-      <div class="lvl" id="lvl"></div>
-      <div class="thr" id="thr"></div>
+  <!-- record / review card (reference mode only) -->
+  <div class="card hidden" id="recordCard">
+    <h1>Record your phrase</h1>
+    <p>Play your practice phrase once, the way a clean rep should sound. Tap record, play it through, then stop. You can listen back and re-record until it's right — that take becomes what the counter listens for.</p>
+    <div id="recIdle"><button class="recbtn" id="recStartBtn">Record reference</button></div>
+    <div id="recActive" class="hidden">
+      <div class="rectimer" id="recTimer">0.0s</div>
+      <div class="recmeter"><div class="lvl" id="recLvl"></div></div>
+      <button class="recbtn stop" id="recStopBtn">Stop</button>
+    </div>
+    <div id="recReview" class="review hidden">
+      <p style="margin-bottom:10px">Listen back. If it's a clean take, use it. If not, record again.</p>
+      <div class="tooshort hidden" id="tooShort">That's very short for a phrase — record again if it cut off early.</div>
+      <audio id="refAudio" controls></audio>
+      <div class="pair">
+        <button class="redo" id="reviewRedo">Record again</button>
+        <button class="use" id="reviewUse">Use this reference</button>
+      </div>
     </div>
   </div>
 
-  <details id="settings">
-    <summary>Settings <span class="chev">▾</span></summary>
+  <!-- counter -->
+  <div id="counter">
+    <div class="hero">
+      <div class="eyebrow">clean reps</div>
+      <div class="count" id="count">0</div>
+      <div class="goalline" id="goalline">goal <b id="goalView">3</b> · 3 to go</div>
+      <div class="lastrep" id="lastrep"></div>
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <button class="resetfront" id="resetFront">Reset count</button>
+    </div>
 
-    <div class="ctl">
-      <div class="goalstep">
-        <label style="flex:1">Goal</label>
-        <button id="goalDown" aria-label="lower goal">–</button>
-        <span class="g" id="goalNum">3</span>
-        <button id="goalUp" aria-label="raise goal">+</button>
+    <div class="tally" id="tally"><span class="tally-empty">your reps will tally up here</span></div>
+
+    <div class="panel" id="matchPanel">
+      <h2>Match to reference <span class="state" id="matchState">—</span></h2>
+      <div class="meter">
+        <div class="lvl match" id="matchLvl"></div>
+        <div class="thr" id="matchThr" data-label="count line"></div>
       </div>
-      <div class="hint">Your baseline is 3 clean in a row; bump it to 20 when you want a longer run.</div>
     </div>
 
-    <div class="ctl">
-      <div class="row"><label>Sensitivity</label><span class="val" id="thrVal">−45 dB</span></div>
-      <input type="range" id="thrSlider" min="-70" max="-20" value="-45" step="1">
-      <div class="hint">Where the line sits on the meter. If quiet playing isn't counted, drag left; if room noise triggers it, drag right.</div>
-    </div>
-
-    <div class="ctl">
-      <div class="row"><label>Gap between reps</label><span class="val" id="gapVal">1.0 s</span></div>
-      <input type="range" id="gapSlider" min="0.4" max="2.5" value="1.0" step="0.1">
-      <div class="hint">How long a pause closes one rep. Counts a rep when you go quiet for this long, so leave a short breath between repeats.</div>
-    </div>
-
-    <div class="ctl">
-      <div class="row"><label>Ignore bursts under</label><span class="val" id="minVal">2.0 s</span></div>
-      <input type="range" id="minSlider" min="0.5" max="6" value="2.0" step="0.5">
-      <div class="hint">Filters out coughs and stray notes. Your phrase is ~5s, so anything shorter than this won't count.</div>
-    </div>
-
-    <div class="ctl">
-      <div class="actions">
-        <button id="calBtn">Calibrate quiet</button>
-        <button id="resetBtn">Reset count</button>
+    <div class="panel tight">
+      <h2>Live input <span class="state" id="inputState">silent</span></h2>
+      <div class="meter">
+        <div class="lvl input" id="inputLvl"></div>
+        <div class="thr hidden" id="inputThr" data-label="threshold"></div>
       </div>
-      <div class="hint">Calibrate sets the threshold from your room's silence — stay quiet for ~2 seconds after tapping.</div>
     </div>
 
-    <div class="ctl">
-      <button class="done" id="doneBtn">Done — back to counter</button>
-    </div>
-  </details>
+    <details id="settings">
+      <summary>Settings <span class="chev">▾</span></summary>
 
-  <div class="note">Everything runs on your device. Nothing is recorded, uploaded, or sent anywhere.</div>
+      <div class="ctl">
+        <div class="goalstep">
+          <label style="flex:1">Goal</label>
+          <button id="goalDown" aria-label="lower goal">–</button>
+          <span class="g" id="goalNum">3</span>
+          <button id="goalUp" aria-label="raise goal">+</button>
+        </div>
+        <div class="hint">How many in a row you're aiming for. Three is a solid baseline; raise it for a longer run.</div>
+      </div>
+
+      <!-- pauses-mode settings -->
+      <div class="ctl pausesOnly">
+        <div class="row"><label>Sensitivity</label><span class="val" id="thrVal">−45 dB</span></div>
+        <input type="range" id="thrSlider" min="-70" max="-20" value="-45" step="1">
+        <div class="hint">Where the threshold sits on the input meter. If quiet playing isn't counted, drag left; if room noise triggers it, drag right.</div>
+        <button class="calbtn" id="calBtn">Calibrate from room silence</button>
+      </div>
+
+      <div class="ctl pausesOnly">
+        <div class="row"><label>Gap between reps</label><span class="val" id="gapVal">0.5 s</span></div>
+        <input type="range" id="gapSlider" min="0.3" max="2.5" value="0.5" step="0.1">
+        <div class="hint">How long a pause closes one rep. It counts a rep when you go quiet for this long, so leave a short breath between repeats.</div>
+      </div>
+
+      <div class="ctl pausesOnly">
+        <div class="row"><label>Ignore bursts under</label><span class="val" id="minVal">2.0 s</span></div>
+        <input type="range" id="minSlider" min="0.3" max="6" value="2.0" step="0.1">
+        <div class="hint">Filters out coughs and stray notes — anything shorter than this won't count as a rep.</div>
+      </div>
+
+      <!-- reference-mode settings -->
+      <div class="ctl refOnly">
+        <div class="row"><label>Match strictness</label><span class="val" id="matchVal">0.60</span></div>
+        <input type="range" id="matchSlider" min="0.30" max="0.90" value="0.60" step="0.02">
+        <div class="hint">Where the count line sits on the match meter. Watch the meter while you play: set this just below where your good reps peak, and above the dips between reps. Higher = fussier.</div>
+      </div>
+
+      <div class="ctl"><button class="done" id="doneBtn">Done — back to counter</button></div>
+    </details>
+  </div>
+
+  <div class="note">Everything runs on your device. Nothing is recorded to a server, uploaded, or sent anywhere.</div>
 
 <script>
 (function(){
   "use strict";
-  // ---- state & params ----
-  var thresholdDb = -45, gapMs = 1000, minPhraseMs = 2000, goal = 3;
-  var count = 0, state = "idle", burstStart = 0, lastLoud = 0, smoothedDb = -100;
-  var running = false, calibrating = false, calMax = -100, calEnd = 0;
-  var audioCtx, analyser, micStream, srcNode, dataArr, rafId, wakeLock = null;
 
-  // ---- elements ----
-  var $ = function(id){ return document.getElementById(id); };
+  // ---------- config ----------
+  var HOP_MS=50, N=48, EVAL_MS=90, MIN_HZ=55, MAX_HZ=5000;
+
+  // ---------- persisted settings ----------
+  var store=(function(){
+    try{ var k="__t"; localStorage.setItem(k,"1"); localStorage.removeItem(k);
+      return { get:function(key,def){ var v=localStorage.getItem(key); return v===null?def:v; },
+               set:function(key,val){ try{ localStorage.setItem(key,String(val)); }catch(e){} } };
+    }catch(e){ return { get:function(_k,def){return def;}, set:function(){} }; }
+  })();
+
+  var mode=store.get("mode","pauses");
+  var goal=parseInt(store.get("goal","3"),10)||3;
+  var pThresholdDb=parseFloat(store.get("pThr","-45"));
+  var pGapMs=parseFloat(store.get("pGap","0.5"))*1000;
+  var pMinMs=parseFloat(store.get("pMin","2.0"))*1000;
+  var matchThreshold=parseFloat(store.get("matchThreshold","0.60"));
+
+  // ---------- state ----------
+  var count=0;
+  // pauses engine
+  var smoothedDb=-100, pState="idle", pBurstStart=0, pLastLoud=0, calibrating=false, calMax=-100, calEnd=0;
+  // reference engine
+  var refFixed=null, refLenFrames=0, phraseMs=0, ringFrames=[], armed=true, lastCountTime=-1e9, refractoryMs=900;
+  var recState="needsRef", tempFrames=[], tempPcm=[], recStart=0, recTimerId=null;
+  // shared audio
+  var listening=false, recording=false;
+  var audioCtx, micStream, srcNode, analyser, proc, silentGain, rafId;
+  var freqData, timeData, lastFeatureTime=0, lastEvalTime=0, wakeLock=null;
+
+  // ---------- elements ----------
+  var $=function(id){return document.getElementById(id);};
+  var tabPauses=$("tabPauses"), tabReference=$("tabReference"), tabHint=$("tabHint");
   var dot=$("dot"), statusText=$("statusText"), micBtn=$("micBtn"), errBox=$("err");
-  var countEl=$("count"), goalline=$("goalline"), goalView=$("goalView"), lastrep=$("lastrep"), fill=$("fill");
-  var tally=$("tally"), lvl=$("lvl"), thr=$("thr"), stateLabel=$("stateLabel");
-  var goalNum=$("goalNum"), thrVal=$("thrVal"), gapVal=$("gapVal"), minVal=$("minVal");
+  var refChip=$("refChip"), refLenEl=$("refLen"), rerecBtn=$("rerecBtn");
+  var recordCard=$("recordCard"), recIdle=$("recIdle"), recActive=$("recActive"), recReview=$("recReview");
+  var recStartBtn=$("recStartBtn"), recStopBtn=$("recStopBtn"), recTimer=$("recTimer"), recLvl=$("recLvl");
+  var refAudio=$("refAudio"), reviewUse=$("reviewUse"), reviewRedo=$("reviewRedo"), tooShort=$("tooShort");
+  var counter=$("counter"), countEl=$("count"), goalline=$("goalline"), goalView=$("goalView");
+  var lastrep=$("lastrep"), fill=$("fill"), resetFront=$("resetFront"), tally=$("tally");
+  var matchPanel=$("matchPanel"), matchLvl=$("matchLvl"), matchThr=$("matchThr"), matchState=$("matchState");
+  var inputLvl=$("inputLvl"), inputThr=$("inputThr"), inputState=$("inputState");
+  var goalNum=$("goalNum"), thrVal=$("thrVal"), gapVal=$("gapVal"), minVal=$("minVal"), matchVal=$("matchVal");
 
-  // ---- meter mapping (dB -> %) ----
-  var MIN_DB=-70, MAX_DB=-10;
-  function dbToPct(db){ return Math.max(0, Math.min(100, (db-MIN_DB)/(MAX_DB-MIN_DB)*100)); }
-  function placeThreshold(){ thr.style.left = dbToPct(thresholdDb) + "%"; }
+  function showErr(m){errBox.textContent=m; errBox.classList.add("show");}
+  function clearErr(){errBox.classList.remove("show");}
 
-  // ---- mic ----
-  function showErr(msg){ errBox.textContent = msg; errBox.classList.add("show"); }
-  function clearErr(){ errBox.classList.remove("show"); }
-
-  async function start(){
-    clearErr();
-    try{
-      micStream = await navigator.mediaDevices.getUserMedia({
-        audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false }
-      });
-    }catch(e){
-      showErr("Microphone unavailable. Allow mic access, and make sure the page is opened over https or locally — browsers block the mic on insecure pages.");
-      return;
-    }
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if(audioCtx.state === "suspended"){ try{ await audioCtx.resume(); }catch(e){} }
-    srcNode = audioCtx.createMediaStreamSource(micStream);
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 1024;
-    srcNode.connect(analyser);
-    dataArr = new Float32Array(analyser.fftSize);
-    smoothedDb = -100; state = "idle";
-    running = true;
-    micBtn.textContent = "Stop"; micBtn.classList.add("on");
-    statusText.textContent = "listening"; dot.classList.add("live");
-    requestWake();
-    loop();
+  // ---------- audio graph ----------
+  async function ensureMic(){
+    if(audioCtx) return true;
+    try{ micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}); }
+    catch(e){ showErr("Microphone unavailable. Allow mic access, and make sure the page is opened over https (a real link, not the file on disk) — browsers block the mic otherwise."); return false; }
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended"){ try{await audioCtx.resume();}catch(e){} }
+    srcNode=audioCtx.createMediaStreamSource(micStream);
+    analyser=audioCtx.createAnalyser(); analyser.fftSize=2048; srcNode.connect(analyser);
+    freqData=new Float32Array(analyser.frequencyBinCount); timeData=new Float32Array(analyser.fftSize);
+    return true;
   }
-
-  function stop(){
-    running = false;
-    if(rafId) cancelAnimationFrame(rafId);
-    if(micStream){ micStream.getTracks().forEach(function(t){ t.stop(); }); }
-    if(audioCtx){ audioCtx.close(); audioCtx = null; }
-    micBtn.textContent = "Start listening"; micBtn.classList.remove("on");
-    statusText.textContent = "not listening";
-    dot.classList.remove("live","hot");
-    stateLabel.textContent = "silent"; stateLabel.classList.remove("playing");
-    lvl.style.width = "0%"; lvl.classList.remove("hot");
-    releaseWake();
+  function teardownMic(){
+    if(rafId) cancelAnimationFrame(rafId); rafId=null;
+    stopPcmTap();
+    if(micStream){ micStream.getTracks().forEach(function(t){t.stop();}); micStream=null; }
+    if(audioCtx){ try{audioCtx.close();}catch(e){} audioCtx=null; }
+    srcNode=null; analyser=null;
   }
-
-  async function requestWake(){
-    try{ if("wakeLock" in navigator){ wakeLock = await navigator.wakeLock.request("screen"); } }catch(e){}
+  function startPcmTap(){
+    if(!audioCtx||proc) return;
+    proc=audioCtx.createScriptProcessor(4096,1,1);
+    silentGain=audioCtx.createGain(); silentGain.gain.value=0;
+    proc.onaudioprocess=function(e){ if(!recording) return; tempPcm.push(new Float32Array(e.inputBuffer.getChannelData(0))); };
+    srcNode.connect(proc); proc.connect(silentGain); silentGain.connect(audioCtx.destination);
   }
+  function stopPcmTap(){
+    if(proc){ try{proc.disconnect();}catch(e){} proc.onaudioprocess=null; proc=null; }
+    if(silentGain){ try{silentGain.disconnect();}catch(e){} silentGain=null; }
+  }
+  async function requestWake(){ try{ if("wakeLock" in navigator){ wakeLock=await navigator.wakeLock.request("screen"); } }catch(e){} }
   function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
 
-  // ---- core loop ----
-  function loop(){
-    if(!running) return;
-    var now = performance.now();
-    analyser.getFloatTimeDomainData(dataArr);
-    var sum=0, i, v;
-    for(i=0;i<dataArr.length;i++){ v=dataArr[i]; sum += v*v; }
-    var rms = Math.sqrt(sum/dataArr.length);
-    var db = 20*Math.log10(rms + 1e-7);
-    smoothedDb = smoothedDb + (db - smoothedDb)*0.3;
+  // ---------- features ----------
+  function rawDb(){
+    analyser.getFloatTimeDomainData(timeData);
+    var s=0,i,v; for(i=0;i<timeData.length;i++){ v=timeData[i]; s+=v*v; }
+    return 20*Math.log10(Math.sqrt(s/timeData.length)+1e-7);
+  }
+  function dbToPct(db){ return Math.max(0,Math.min(100,(db+70)/60*100)); } // -70..-10 -> 0..100
+  function computeChroma(){
+    analyser.getFloatFrequencyData(freqData);
+    var binHz=audioCtx.sampleRate/analyser.fftSize, chroma=new Float32Array(12), i,f,mag,midi,pc;
+    var lo=Math.max(1,Math.floor(MIN_HZ/binHz)), hi=Math.min(freqData.length-1,Math.ceil(MAX_HZ/binHz));
+    for(i=lo;i<=hi;i++){ f=i*binHz; mag=Math.pow(10,freqData[i]/20); midi=69+12*Math.log2(f/440);
+      pc=((Math.round(midi)%12)+12)%12; chroma[pc]+=mag; }
+    var norm=0; for(i=0;i<12;i++) norm+=chroma[i]*chroma[i]; norm=Math.sqrt(norm);
+    if(norm>1e-9){ for(i=0;i<12;i++) chroma[i]/=norm; }
+    return chroma;
+  }
+
+  // ---------- matching ----------
+  function resampleFrames(frames,n){
+    var len=frames.length,out=[],i,idx;
+    if(len===0) return out;
+    if(len===1){ for(i=0;i<n;i++) out.push(frames[0]); return out; }
+    for(i=0;i<n;i++){ idx=Math.round(i*(len-1)/(n-1)); out.push(frames[idx]); }
+    return out;
+  }
+  function frameDist(a,b){ var d=0,i; for(i=0;i<12;i++) d+=a[i]*b[i]; var c=1-d; return c<0?0:c; }
+  function dtwScore(A,B){
+    var n=A.length, prev=new Float64Array(n+1), cur=new Float64Array(n+1), i,j,c,m;
+    for(j=0;j<=n;j++) prev[j]=Infinity; prev[0]=0;
+    for(i=1;i<=n;i++){ cur[0]=Infinity;
+      for(j=1;j<=n;j++){ c=frameDist(A[i-1],B[j-1]); m=prev[j]; if(prev[j-1]<m)m=prev[j-1]; if(cur[j-1]<m)m=cur[j-1]; cur[j]=c+m; }
+      var t=prev; prev=cur; cur=t; }
+    var sc=1-prev[n]/n; return sc<0?0:(sc>1?1:sc);
+  }
+
+  // ---------- layout ----------
+  function layout(){
+    var refReady=(mode==="reference" && recState==="ready");
+    var inRecFlow=(mode==="reference" && recState!=="ready");
+    recordCard.classList.toggle("hidden", !inRecFlow);
+    recIdle.classList.toggle("hidden", !(inRecFlow && recState==="needsRef"));
+    recActive.classList.toggle("hidden", !(inRecFlow && recState==="recording"));
+    recReview.classList.toggle("hidden", !(inRecFlow && recState==="review"));
+    refChip.classList.toggle("hidden", !refReady);
+    counter.classList.toggle("hidden", inRecFlow);
+    matchPanel.classList.toggle("hidden", mode!=="reference");
+    inputThr.classList.toggle("hidden", mode!=="pauses");
+    document.querySelectorAll(".pausesOnly").forEach(function(el){ el.classList.toggle("hidden", mode!=="pauses"); });
+    document.querySelectorAll(".refOnly").forEach(function(el){ el.classList.toggle("hidden", mode!=="reference"); });
+    micBtn.disabled = (mode==="reference" && !refFixed) || inRecFlow;
+    tabPauses.classList.toggle("active", mode==="pauses");
+    tabReference.classList.toggle("active", mode==="reference");
+    tabHint.textContent = mode==="pauses"
+      ? "Counts a rep each time you pause briefly between repeats."
+      : "Record your phrase once, then it counts every recurrence — no pauses needed.";
+    if(!listening){
+      statusText.textContent = inRecFlow ? (recState==="recording"?"recording reference":recState==="review"?"review take":"no reference yet")
+                                         : "ready";
+    }
+  }
+
+  // ---------- tabs ----------
+  function setMode(m){
+    if(m===mode) return;
+    if(listening) stopListening();
+    if(recording) cancelRecording();
+    mode=m; store.set("mode",m);
+    layout(); placeMarkers();
+  }
+  tabPauses.addEventListener("click", function(){ setMode("pauses"); });
+  tabReference.addEventListener("click", function(){ setMode("reference"); });
+
+  // ---------- reference recording ----------
+  recStartBtn.addEventListener("click", startRecording);
+  reviewRedo.addEventListener("click", startRecording);
+  rerecBtn.addEventListener("click", function(){ if(listening) stopListening(); recState="needsRef"; layout(); startRecording(); });
+  async function startRecording(){
+    clearErr();
+    if(!(await ensureMic())) return;
+    tempFrames=[]; tempPcm=[]; recStart=performance.now(); recording=true; lastFeatureTime=0;
+    startPcmTap(); recState="recording"; layout();
+    if(recTimerId) clearInterval(recTimerId);
+    recTimerId=setInterval(function(){ recTimer.textContent=((performance.now()-recStart)/1000).toFixed(1)+"s"; },100);
+    recLoop();
+  }
+  recStopBtn.addEventListener("click", finishRecording);
+  function recLoop(){
+    if(!recording) return;
+    var now=performance.now();
+    if(now-lastFeatureTime>=HOP_MS){ tempFrames.push(computeChroma()); recLvl.style.width=dbToPct(rawDb())+"%"; lastFeatureTime=now; }
+    rafId=requestAnimationFrame(recLoop);
+  }
+  function finishRecording(){
+    recording=false;
+    if(recTimerId){ clearInterval(recTimerId); recTimerId=null; }
+    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+    stopPcmTap();
+    phraseMs=performance.now()-recStart;
+    refAudio.src=encodeWavUrl(tempPcm, audioCtx?audioCtx.sampleRate:44100);
+    tooShort.classList.toggle("hidden", phraseMs>=1200);
+    recState="review"; layout();
+  }
+  function cancelRecording(){
+    recording=false;
+    if(recTimerId){ clearInterval(recTimerId); recTimerId=null; }
+    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+    stopPcmTap(); teardownMic();
+    recState = refFixed ? "ready" : "needsRef";
+  }
+  reviewUse.addEventListener("click", function(){
+    if(tempFrames.length<4){ showErr("That take was too short to use. Record the phrase again."); return; }
+    refLenFrames=tempFrames.length; refFixed=resampleFrames(tempFrames,N);
+    refractoryMs=Math.max(700, phraseMs*0.5);
+    refLenEl.textContent=(phraseMs/1000).toFixed(1)+"s";
+    resetCount(); recState="ready"; teardownMic(); layout();
+  });
+
+  // ---------- WAV ----------
+  function encodeWavUrl(chunks, sampleRate){
+    var len=0,i; for(i=0;i<chunks.length;i++) len+=chunks[i].length;
+    var pcm=new Float32Array(len),off=0; for(i=0;i<chunks.length;i++){ pcm.set(chunks[i],off); off+=chunks[i].length; }
+    var buf=new ArrayBuffer(44+len*2),view=new DataView(buf);
+    function wstr(o,s){ for(var k=0;k<s.length;k++) view.setUint8(o+k,s.charCodeAt(k)); }
+    wstr(0,"RIFF"); view.setUint32(4,36+len*2,true); wstr(8,"WAVE"); wstr(12,"fmt ");
+    view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,1,true);
+    view.setUint32(24,sampleRate,true); view.setUint32(28,sampleRate*2,true); view.setUint16(32,2,true); view.setUint16(34,16,true);
+    wstr(36,"data"); view.setUint32(40,len*2,true);
+    var o=44,j,sm; for(j=0;j<len;j++){ sm=Math.max(-1,Math.min(1,pcm[j])); view.setInt16(o,sm<0?sm*0x8000:sm*0x7FFF,true); o+=2; }
+    return URL.createObjectURL(new Blob([buf],{type:"audio/wav"}));
+  }
+
+  // ---------- listening ----------
+  micBtn.addEventListener("click", function(){ listening?stopListening():startListening(); });
+  async function startListening(){
+    clearErr();
+    if(mode==="reference" && !refFixed){ showErr("Record a reference first, or switch to the By pauses tab."); return; }
+    if(!(await ensureMic())) return;
+    smoothedDb=-100; pState="idle"; ringFrames=[]; armed=true; lastCountTime=-1e9; lastFeatureTime=0; lastEvalTime=0;
+    listening=true; micBtn.textContent="Stop"; micBtn.classList.add("on");
+    statusText.textContent="listening"; dot.classList.add("live"); requestWake();
+    listenLoop();
+  }
+  function stopListening(){
+    listening=false;
+    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+    teardownMic();
+    micBtn.textContent="Start listening"; micBtn.classList.remove("on");
+    statusText.textContent="ready"; dot.classList.remove("live","hot");
+    inputLvl.style.width="0%"; inputLvl.classList.remove("hot");
+    matchLvl.style.width="0%"; matchLvl.classList.remove("hit");
+    inputState.textContent="silent"; inputState.classList.remove("on");
+    matchState.textContent="—"; matchState.classList.remove("on");
+    releaseWake();
+  }
+  function listenLoop(){
+    if(!listening) return;
+    var now=performance.now();
+    var db=rawDb();
+    smoothedDb=smoothedDb+(db-smoothedDb)*0.3;
 
     if(calibrating){
-      if(smoothedDb > calMax) calMax = smoothedDb;
-      if(now >= calEnd){
-        calibrating = false;
-        thresholdDb = Math.max(-70, Math.min(-22, calMax + 12));
-        syncThr(); placeThreshold();
-        statusText.textContent = "listening";
-      }
+      if(smoothedDb>calMax) calMax=smoothedDb;
+      if(now>=calEnd){ calibrating=false; pThresholdDb=Math.max(-70,Math.min(-22,calMax+12)); store.set("pThr",pThresholdDb); syncPauses(); placeMarkers(); statusText.textContent="listening"; }
     }
 
-    var loud = smoothedDb > thresholdDb && !calibrating;
-
-    // meter
-    lvl.style.width = dbToPct(smoothedDb) + "%";
-    lvl.classList.toggle("hot", loud);
-    dot.classList.toggle("hot", loud && running);
-    stateLabel.textContent = calibrating ? "calibrating…" : (loud ? "playing" : "silent");
-    stateLabel.classList.toggle("playing", loud);
-
-    // state machine
-    if(loud){
-      if(state === "idle"){ state = "playing"; burstStart = now; }
-      lastLoud = now;
+    if(mode==="pauses"){
+      inputLvl.style.width=dbToPct(smoothedDb)+"%";
+      var loud=smoothedDb>pThresholdDb && !calibrating;
+      inputLvl.classList.toggle("hot",loud); dot.classList.toggle("hot",loud);
+      inputState.textContent=calibrating?"calibrating…":(loud?"playing":"silent"); inputState.classList.toggle("on",loud);
+      if(loud){ if(pState==="idle"){ pState="playing"; pBurstStart=now; } pLastLoud=now; }
+      else if(pState==="playing" && (now-pLastLoud)>pGapMs){
+        var dur=pLastLoud-pBurstStart; pState="idle";
+        if(dur>=pMinMs){ count++; registerRep("last rep "+(dur/1000).toFixed(1)+"s"); }
+      }
     } else {
-      if(state === "playing" && (now - lastLoud) > gapMs){
-        var dur = lastLoud - burstStart;
-        state = "idle";
-        if(dur >= minPhraseMs) registerRep(dur);
+      if(now-lastFeatureTime>=HOP_MS){
+        ringFrames.push(computeChroma()); if(ringFrames.length>refLenFrames) ringFrames.shift();
+        var pct=dbToPct(smoothedDb), loud2=pct>18;
+        inputLvl.style.width=pct+"%"; inputLvl.classList.toggle("hot",loud2); dot.classList.toggle("hot",loud2);
+        inputState.textContent=loud2?"playing":"silent"; inputState.classList.toggle("on",loud2);
+        lastFeatureTime=now;
+      }
+      if(now-lastEvalTime>=EVAL_MS && ringFrames.length>=refLenFrames*0.85){
+        var score=dtwScore(resampleFrames(ringFrames,N),refFixed);
+        matchLvl.style.width=(score*100)+"%";
+        var hit=score>=matchThreshold; matchLvl.classList.toggle("hit",hit);
+        matchState.textContent=Math.round(score*100)+"%"; matchState.classList.toggle("on",hit);
+        if(score<matchThreshold-0.07) armed=true;
+        if(armed && score>=matchThreshold && (now-lastCountTime)>refractoryMs){ count++; lastCountTime=now; armed=false; registerRep("last rep matched "+Math.round(score*100)+"%"); }
+        lastEvalTime=now;
       }
     }
-    rafId = requestAnimationFrame(loop);
+    rafId=requestAnimationFrame(listenLoop);
   }
 
-  // ---- reps ----
-  function registerRep(durMs){
-    count++;
-    countEl.textContent = count;
+  // ---------- count UI ----------
+  function registerRep(info){
+    countEl.textContent=count;
     countEl.classList.remove("bump"); void countEl.offsetWidth; countEl.classList.add("bump");
-    lastrep.textContent = "last rep " + (durMs/1000).toFixed(1) + "s";
-    addTallyStroke();
-    updateGoal();
+    lastrep.textContent=info; renderTally(); updateGoal();
   }
-
+  function resetCount(){ count=0; armed=true; lastCountTime=-1e9; pState="idle"; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
   function updateGoal(){
-    var done = count >= goal;
-    var remaining = Math.max(0, goal - count);
-    goalView.textContent = goal;
-    if(count === 0){ goalline.innerHTML = "goal <b>"+goal+"</b> · "+goal+" to go"; }
-    else if(done){ goalline.innerHTML = "<b>"+count+" clean</b> — goal reached"; }
-    else { goalline.innerHTML = "goal <b>"+goal+"</b> · "+remaining+" to go"; }
-    fill.style.width = Math.min(100, count/goal*100) + "%";
-    fill.classList.toggle("done", done);
-    countEl.classList.toggle("done", done);
+    var done=count>=goal, remaining=Math.max(0,goal-count);
+    goalView.textContent=goal; goalNum.textContent=goal;
+    if(count===0) goalline.innerHTML="goal <b>"+goal+"</b> · "+goal+" to go";
+    else if(done) goalline.innerHTML="<b>"+count+" clean</b> — goal reached";
+    else goalline.innerHTML="goal <b>"+goal+"</b> · "+remaining+" to go";
+    fill.style.width=Math.min(100,count/goal*100)+"%"; fill.classList.toggle("done",done); countEl.classList.toggle("done",done);
   }
-
   function renderTally(){
-    tally.innerHTML = "";
-    if(count === 0){
-      var em = document.createElement("span");
-      em.className = "tally-empty"; em.textContent = "your reps will tally up here";
-      tally.appendChild(em); return;
-    }
-    var groups = Math.ceil(count/5), done = count >= goal, g, strokesInGroup, k, grp, s, cross;
-    for(g=0; g<groups; g++){
-      strokesInGroup = Math.min(5, count - g*5);
-      grp = document.createElement("div");
-      grp.className = "grp" + (done ? " done" : "");
-      for(k=0; k<Math.min(4,strokesInGroup); k++){
-        s = document.createElement("div"); s.className = "s"; grp.appendChild(s);
-      }
-      if(strokesInGroup === 5){
-        cross = document.createElement("div"); cross.className = "cross"; grp.appendChild(cross);
-      }
+    tally.innerHTML="";
+    if(count===0){ var em=document.createElement("span"); em.className="tally-empty"; em.textContent="your reps will tally up here"; tally.appendChild(em); return; }
+    var groups=Math.ceil(count/5), done=count>=goal, g,k,inGrp,grp,s,cross;
+    for(g=0;g<groups;g++){
+      inGrp=Math.min(5,count-g*5); grp=document.createElement("div"); grp.className="grp"+(done?" done":"");
+      for(k=0;k<Math.min(4,inGrp);k++){ s=document.createElement("div"); s.className="s"; grp.appendChild(s); }
+      if(inGrp===5){ cross=document.createElement("div"); cross.className="cross"; grp.appendChild(cross); }
       tally.appendChild(grp);
     }
   }
-  function addTallyStroke(){ renderTally(); } // re-render keeps draw animation on newest group
 
-  // ---- controls ----
-  function syncThr(){ thrVal.textContent = "−" + Math.abs(thresholdDb) + " dB"; $("thrSlider").value = thresholdDb; }
-
-  micBtn.addEventListener("click", function(){ running ? stop() : start(); });
-
-  $("thrSlider").addEventListener("input", function(e){
-    thresholdDb = parseInt(e.target.value,10); syncThr(); placeThreshold();
-  });
-  $("gapSlider").addEventListener("input", function(e){
-    var s = parseFloat(e.target.value); gapMs = s*1000; gapVal.textContent = s.toFixed(1)+" s";
-  });
-  $("minSlider").addEventListener("input", function(e){
-    var s = parseFloat(e.target.value); minPhraseMs = s*1000; minVal.textContent = s.toFixed(1)+" s";
-  });
-  function setGoal(g){ goal = Math.max(1, g); goalNum.textContent = goal; updateGoal(); }
+  // ---------- controls ----------
+  resetFront.addEventListener("click", resetCount);
+  function setGoal(g){ goal=Math.max(1,g); store.set("goal",goal); updateGoal(); }
   $("goalUp").addEventListener("click", function(){ setGoal(goal+1); });
   $("goalDown").addEventListener("click", function(){ setGoal(goal-1); });
 
-  $("resetBtn").addEventListener("click", function(){
-    count = 0; state = "idle"; countEl.textContent = "0"; lastrep.textContent = "";
-    countEl.classList.remove("done"); renderTally(); updateGoal();
-  });
+  function syncPauses(){
+    thrVal.textContent="−"+Math.abs(Math.round(pThresholdDb))+" dB"; $("thrSlider").value=pThresholdDb;
+    gapVal.textContent=(pGapMs/1000).toFixed(1)+" s"; $("gapSlider").value=(pGapMs/1000);
+    minVal.textContent=(pMinMs/1000).toFixed(1)+" s"; $("minSlider").value=(pMinMs/1000);
+  }
+  function syncMatch(){ matchVal.textContent=matchThreshold.toFixed(2); $("matchSlider").value=matchThreshold; }
+  function placeMarkers(){ inputThr.style.left=dbToPct(pThresholdDb)+"%"; matchThr.style.left=(matchThreshold*100)+"%"; }
 
+  $("thrSlider").addEventListener("input", function(e){ pThresholdDb=parseInt(e.target.value,10); store.set("pThr",pThresholdDb); syncPauses(); placeMarkers(); });
+  $("gapSlider").addEventListener("input", function(e){ var s=parseFloat(e.target.value); pGapMs=s*1000; store.set("pGap",s); gapVal.textContent=s.toFixed(1)+" s"; });
+  $("minSlider").addEventListener("input", function(e){ var s=parseFloat(e.target.value); pMinMs=s*1000; store.set("pMin",s); minVal.textContent=s.toFixed(1)+" s"; });
+  $("matchSlider").addEventListener("input", function(e){ matchThreshold=parseFloat(e.target.value); store.set("matchThreshold",matchThreshold); syncMatch(); placeMarkers(); });
   $("calBtn").addEventListener("click", function(){
-    if(!running){ showErr("Start listening first, then calibrate."); return; }
-    clearErr(); calibrating = true; calMax = -100; calEnd = performance.now() + 2000;
-    statusText.textContent = "calibrating…";
+    if(!listening || mode!=="pauses"){ showErr("Start listening on the By pauses tab first, then calibrate."); return; }
+    clearErr(); calibrating=true; calMax=-100; calEnd=performance.now()+2000; statusText.textContent="calibrating…";
   });
+  $("doneBtn").addEventListener("click", function(){ $("settings").open=false; window.scrollTo({top:0,behavior:"smooth"}); });
 
-  $("doneBtn").addEventListener("click", function(){
-    $("settings").open = false;
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-
-  // ---- init ----
-  placeThreshold(); syncThr(); updateGoal(); renderTally();
+  // ---------- init ----------
+  syncPauses(); syncMatch(); placeMarkers(); updateGoal(); renderTally();
+  if(mode==="reference") recState="needsRef";
+  layout();
 })();
 </script>
 </body>
