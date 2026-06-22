@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#15121A">
+<title>Rep Counter</title>
+<style>
+  :root{
+    --bg:#15121A; --bg2:#1E1A24; --bg3:#252029; --line:#2E2832;
+    --ink:#F2EBDF; --muted:#9C9098; --faint:#665E69;
+    --brass:#E2A14C; --brass-dim:#7A5C30; --brass-soft:rgba(226,161,76,.14);
+    --sage:#A4C29F; --sage-soft:rgba(164,194,159,.16);
+    --serif:"Iowan Old Style",Georgia,"Times New Roman",serif;
+    --sans:-apple-system,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(120% 90% at 50% -10%, #1C1722 0%, var(--bg) 60%);
+    color:var(--ink); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased; min-height:100dvh;
+    padding:max(18px,env(safe-area-inset-top)) 18px max(22px,env(safe-area-inset-bottom));
+    display:flex; flex-direction:column; gap:18px; max-width:520px; margin:0 auto;
+  }
+
+  /* top bar */
+  .bar{display:flex; align-items:center; justify-content:space-between}
+  .status{display:flex; align-items:center; gap:9px; font-size:13px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--muted)}
+  .dot{width:9px; height:9px; border-radius:50%; background:var(--faint); flex:none}
+  .dot.live{background:var(--brass); box-shadow:0 0 0 0 var(--brass-soft); animation:pulse 1.8s ease-out infinite}
+  .dot.hot{background:var(--brass); box-shadow:0 0 12px 2px rgba(226,161,76,.6)}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(226,161,76,.4)}100%{box-shadow:0 0 0 12px rgba(226,161,76,0)}}
+  .mic{appearance:none; border:1px solid var(--line); background:var(--bg2); color:var(--ink);
+    font-family:var(--sans); font-size:14px; font-weight:600; padding:9px 16px; border-radius:999px;
+    cursor:pointer; transition:.15s; letter-spacing:.02em}
+  .mic:hover{border-color:var(--brass-dim)}
+  .mic.on{background:var(--brass); color:#1A1206; border-color:var(--brass)}
+
+  /* hero */
+  .hero{background:var(--bg2); border:1px solid var(--line); border-radius:22px;
+    padding:26px 24px 24px; text-align:center; position:relative; overflow:hidden}
+  .eyebrow{font-family:var(--serif); font-style:italic; font-size:15px; color:var(--brass);
+    letter-spacing:.02em; margin-bottom:2px}
+  .count{font-size:clamp(86px,30vw,150px); font-weight:800; line-height:.92; letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums; transition:color .4s}
+  .count.bump{animation:bump .32s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .count.done{color:var(--sage)}
+  .goalline{margin-top:8px; font-size:14px; color:var(--muted); letter-spacing:.01em; min-height:18px}
+  .goalline b{color:var(--ink); font-weight:600}
+  .lastrep{margin-top:3px; font-size:12.5px; color:var(--faint); font-variant-numeric:tabular-nums; min-height:16px}
+
+  /* goal progress */
+  .track{margin-top:18px; height:6px; border-radius:99px; background:var(--bg3); overflow:hidden}
+  .fill{height:100%; width:0; background:var(--brass); border-radius:99px; transition:width .35s ease}
+  .fill.done{background:var(--sage)}
+
+  /* tally signature */
+  .tally{display:flex; flex-wrap:wrap; gap:14px 18px; align-items:flex-end; min-height:46px;
+    padding:4px 2px 0}
+  .grp{position:relative; display:flex; gap:6px; height:40px; align-items:center}
+  .grp .s{width:3px; height:34px; background:var(--brass); border-radius:2px; transform-origin:bottom;
+    animation:draw .28s ease both}
+  .grp.done .s{background:var(--sage)}
+  .grp .cross{position:absolute; top:50%; left:-3px; width:46px; height:3px; background:var(--brass);
+    border-radius:2px; transform:rotate(-24deg); transform-origin:left center; animation:draw .28s ease both}
+  .grp.done .cross{background:var(--sage)}
+  @keyframes draw{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .grp .cross{animation-name:drawx}
+  @keyframes drawx{from{transform:rotate(-24deg) scaleX(0)}to{transform:rotate(-24deg) scaleX(1)}}
+  .tally-empty{color:var(--faint); font-size:13.5px; font-style:italic; font-family:var(--serif)}
+
+  /* live meter */
+  .panel{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:16px 16px 18px}
+  .panel h2{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+    font-weight:600; margin-bottom:11px; display:flex; justify-content:space-between; align-items:center}
+  .panel h2 .state{color:var(--faint); letter-spacing:.04em}
+  .panel h2 .state.playing{color:var(--brass)}
+  .meter{position:relative; height:16px; background:var(--bg3); border-radius:8px; overflow:hidden}
+  .meter .lvl{position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--brass-dim);
+    border-radius:8px}
+  .meter .lvl.hot{background:var(--brass)}
+  .meter .thr{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--ink); opacity:.85}
+  .meter .thr::after{content:"threshold"; position:absolute; top:-15px; left:50%; transform:translateX(-50%);
+    font-size:9px; letter-spacing:.08em; color:var(--muted); white-space:nowrap}
+
+  /* controls */
+  details{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:0 16px}
+  summary{list-style:none; cursor:pointer; padding:15px 0; font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--muted); font-weight:600; display:flex; justify-content:space-between}
+  summary::-webkit-details-marker{display:none}
+  summary .chev{transition:.2s; color:var(--faint)}
+  details[open] summary .chev{transform:rotate(180deg)}
+  .ctl{padding:13px 0; border-top:1px solid var(--line)}
+  .ctl .row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:7px}
+  .ctl label{font-size:14px; color:var(--ink)}
+  .ctl .val{font-size:13px; color:var(--brass); font-variant-numeric:tabular-nums}
+  .ctl .hint{font-size:12px; color:var(--faint); margin-top:5px; line-height:1.45}
+  input[type=range]{width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:99px;
+    background:var(--bg3); outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+    background:var(--brass); cursor:pointer; border:3px solid var(--bg2)}
+  input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; background:var(--brass);
+    cursor:pointer; border:3px solid var(--bg2)}
+  .goalstep{display:flex; align-items:center; gap:14px}
+  .goalstep button{width:34px; height:34px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg3); color:var(--ink); font-size:20px; cursor:pointer; line-height:1}
+  .goalstep button:hover{border-color:var(--brass-dim)}
+  .goalstep .g{font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; min-width:28px; text-align:center}
+  .actions{display:flex; gap:10px; margin-top:4px}
+  .actions button{flex:1; padding:12px; border-radius:12px; border:1px solid var(--line);
+    background:var(--bg3); color:var(--ink); font-size:14px; font-weight:600; cursor:pointer; transition:.15s}
+  .actions button:hover{border-color:var(--brass-dim)}
+
+  .note{font-size:12.5px; color:var(--faint); text-align:center; line-height:1.5; padding:0 6px}
+  .err{display:none; background:var(--brass-soft); border:1px solid var(--brass-dim); color:var(--ink);
+    border-radius:14px; padding:14px 16px; font-size:13.5px; line-height:1.5}
+  .err.show{display:block}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001s !important}
+    .dot.live{animation:none}
+  }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <div class="status"><span class="dot" id="dot"></span><span id="statusText">not listening</span></div>
+    <button class="mic" id="micBtn">Start listening</button>
+  </div>
+
+  <div class="err" id="err"></div>
+
+  <div class="hero">
+    <div class="eyebrow">clean reps</div>
+    <div class="count" id="count">0</div>
+    <div class="goalline" id="goalline">goal <b id="goalView">3</b> · 3 to go</div>
+    <div class="lastrep" id="lastrep"></div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+
+  <div class="tally" id="tally"><span class="tally-empty">your reps will tally up here</span></div>
+
+  <div class="panel">
+    <h2>Live input <span class="state" id="stateLabel">silent</span></h2>
+    <div class="meter">
+      <div class="lvl" id="lvl"></div>
+      <div class="thr" id="thr"></div>
+    </div>
+  </div>
+
+  <details>
+    <summary>Tuning <span class="chev">▾</span></summary>
+
+    <div class="ctl">
+      <div class="goalstep">
+        <label style="flex:1">Goal</label>
+        <button id="goalDown" aria-label="lower goal">–</button>
+        <span class="g" id="goalNum">3</span>
+        <button id="goalUp" aria-label="raise goal">+</button>
+      </div>
+      <div class="hint">Your baseline is 3 clean in a row; bump it to 20 when you want a longer run.</div>
+    </div>
+
+    <div class="ctl">
+      <div class="row"><label>Sensitivity</label><span class="val" id="thrVal">−45 dB</span></div>
+      <input type="range" id="thrSlider" min="-70" max="-20" value="-45" step="1">
+      <div class="hint">Where the line sits on the meter. If quiet playing isn't counted, drag left; if room noise triggers it, drag right.</div>
+    </div>
+
+    <div class="ctl">
+      <div class="row"><label>Gap between reps</label><span class="val" id="gapVal">1.0 s</span></div>
+      <input type="range" id="gapSlider" min="0.4" max="2.5" value="1.0" step="0.1">
+      <div class="hint">How long a pause closes one rep. Counts a rep when you go quiet for this long, so leave a short breath between repeats.</div>
+    </div>
+
+    <div class="ctl">
+      <div class="row"><label>Ignore bursts under</label><span class="val" id="minVal">2.0 s</span></div>
+      <input type="range" id="minSlider" min="0.5" max="6" value="2.0" step="0.5">
+      <div class="hint">Filters out coughs and stray notes. Your phrase is ~5s, so anything shorter than this won't count.</div>
+    </div>
+
+    <div class="ctl">
+      <div class="actions">
+        <button id="calBtn">Calibrate quiet</button>
+        <button id="resetBtn">Reset count</button>
+      </div>
+      <div class="hint">Calibrate sets the threshold from your room's silence — stay quiet for ~2 seconds after tapping.</div>
+    </div>
+  </details>
+
+  <div class="note">Everything runs on your device. Nothing is recorded, uploaded, or sent anywhere.</div>
+
+<script>
+(function(){
+  "use strict";
+  // ---- state & params ----
+  var thresholdDb = -45, gapMs = 1000, minPhraseMs = 2000, goal = 3;
+  var count = 0, state = "idle", burstStart = 0, lastLoud = 0, smoothedDb = -100;
+  var running = false, calibrating = false, calMax = -100, calEnd = 0;
+  var audioCtx, analyser, micStream, srcNode, dataArr, rafId, wakeLock = null;
+
+  // ---- elements ----
+  var $ = function(id){ return document.getElementById(id); };
+  var dot=$("dot"), statusText=$("statusText"), micBtn=$("micBtn"), errBox=$("err");
+  var countEl=$("count"), goalline=$("goalline"), goalView=$("goalView"), lastrep=$("lastrep"), fill=$("fill");
+  var tally=$("tally"), lvl=$("lvl"), thr=$("thr"), stateLabel=$("stateLabel");
+  var goalNum=$("goalNum"), thrVal=$("thrVal"), gapVal=$("gapVal"), minVal=$("minVal");
+
+  // ---- meter mapping (dB -> %) ----
+  var MIN_DB=-70, MAX_DB=-10;
+  function dbToPct(db){ return Math.max(0, Math.min(100, (db-MIN_DB)/(MAX_DB-MIN_DB)*100)); }
+  function placeThreshold(){ thr.style.left = dbToPct(thresholdDb) + "%"; }
+
+  // ---- mic ----
+  function showErr(msg){ errBox.textContent = msg; errBox.classList.add("show"); }
+  function clearErr(){ errBox.classList.remove("show"); }
+
+  async function start(){
+    clearErr();
+    try{
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false }
+      });
+    }catch(e){
+      showErr("Microphone unavailable. Allow mic access, and make sure the page is opened over https or locally — browsers block the mic on insecure pages.");
+      return;
+    }
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === "suspended"){ try{ await audioCtx.resume(); }catch(e){} }
+    srcNode = audioCtx.createMediaStreamSource(micStream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 1024;
+    srcNode.connect(analyser);
+    dataArr = new Float32Array(analyser.fftSize);
+    smoothedDb = -100; state = "idle";
+    running = true;
+    micBtn.textContent = "Stop"; micBtn.classList.add("on");
+    statusText.textContent = "listening"; dot.classList.add("live");
+    requestWake();
+    loop();
+  }
+
+  function stop(){
+    running = false;
+    if(rafId) cancelAnimationFrame(rafId);
+    if(micStream){ micStream.getTracks().forEach(function(t){ t.stop(); }); }
+    if(audioCtx){ audioCtx.close(); audioCtx = null; }
+    micBtn.textContent = "Start listening"; micBtn.classList.remove("on");
+    statusText.textContent = "not listening";
+    dot.classList.remove("live","hot");
+    stateLabel.textContent = "silent"; stateLabel.classList.remove("playing");
+    lvl.style.width = "0%"; lvl.classList.remove("hot");
+    releaseWake();
+  }
+
+  async function requestWake(){
+    try{ if("wakeLock" in navigator){ wakeLock = await navigator.wakeLock.request("screen"); } }catch(e){}
+  }
+  function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
+
+  // ---- core loop ----
+  function loop(){
+    if(!running) return;
+    var now = performance.now();
+    analyser.getFloatTimeDomainData(dataArr);
+    var sum=0, i, v;
+    for(i=0;i<dataArr.length;i++){ v=dataArr[i]; sum += v*v; }
+    var rms = Math.sqrt(sum/dataArr.length);
+    var db = 20*Math.log10(rms + 1e-7);
+    smoothedDb = smoothedDb + (db - smoothedDb)*0.3;
+
+    if(calibrating){
+      if(smoothedDb > calMax) calMax = smoothedDb;
+      if(now >= calEnd){
+        calibrating = false;
+        thresholdDb = Math.max(-70, Math.min(-22, calMax + 12));
+        syncThr(); placeThreshold();
+        statusText.textContent = "listening";
+      }
+    }
+
+    var loud = smoothedDb > thresholdDb && !calibrating;
+
+    // meter
+    lvl.style.width = dbToPct(smoothedDb) + "%";
+    lvl.classList.toggle("hot", loud);
+    dot.classList.toggle("hot", loud && running);
+    stateLabel.textContent = calibrating ? "calibrating…" : (loud ? "playing" : "silent");
+    stateLabel.classList.toggle("playing", loud);
+
+    // state machine
+    if(loud){
+      if(state === "idle"){ state = "playing"; burstStart = now; }
+      lastLoud = now;
+    } else {
+      if(state === "playing" && (now - lastLoud) > gapMs){
+        var dur = lastLoud - burstStart;
+        state = "idle";
+        if(dur >= minPhraseMs) registerRep(dur);
+      }
+    }
+    rafId = requestAnimationFrame(loop);
+  }
+
+  // ---- reps ----
+  function registerRep(durMs){
+    count++;
+    countEl.textContent = count;
+    countEl.classList.remove("bump"); void countEl.offsetWidth; countEl.classList.add("bump");
+    lastrep.textContent = "last rep " + (durMs/1000).toFixed(1) + "s";
+    addTallyStroke();
+    updateGoal();
+  }
+
+  function updateGoal(){
+    var done = count >= goal;
+    var remaining = Math.max(0, goal - count);
+    goalView.textContent = goal;
+    if(count === 0){ goalline.innerHTML = "goal <b>"+goal+"</b> · "+goal+" to go"; }
+    else if(done){ goalline.innerHTML = "<b>"+count+" clean</b> — goal reached"; }
+    else { goalline.innerHTML = "goal <b>"+goal+"</b> · "+remaining+" to go"; }
+    fill.style.width = Math.min(100, count/goal*100) + "%";
+    fill.classList.toggle("done", done);
+    countEl.classList.toggle("done", done);
+  }
+
+  function renderTally(){
+    tally.innerHTML = "";
+    if(count === 0){
+      var em = document.createElement("span");
+      em.className = "tally-empty"; em.textContent = "your reps will tally up here";
+      tally.appendChild(em); return;
+    }
+    var groups = Math.ceil(count/5), done = count >= goal, g, strokesInGroup, k, grp, s, cross;
+    for(g=0; g<groups; g++){
+      strokesInGroup = Math.min(5, count - g*5);
+      grp = document.createElement("div");
+      grp.className = "grp" + (done ? " done" : "");
+      for(k=0; k<Math.min(4,strokesInGroup); k++){
+        s = document.createElement("div"); s.className = "s"; grp.appendChild(s);
+      }
+      if(strokesInGroup === 5){
+        cross = document.createElement("div"); cross.className = "cross"; grp.appendChild(cross);
+      }
+      tally.appendChild(grp);
+    }
+  }
+  function addTallyStroke(){ renderTally(); } // re-render keeps draw animation on newest group
+
+  // ---- controls ----
+  function syncThr(){ thrVal.textContent = "−" + Math.abs(thresholdDb) + " dB"; $("thrSlider").value = thresholdDb; }
+
+  micBtn.addEventListener("click", function(){ running ? stop() : start(); });
+
+  $("thrSlider").addEventListener("input", function(e){
+    thresholdDb = parseInt(e.target.value,10); syncThr(); placeThreshold();
+  });
+  $("gapSlider").addEventListener("input", function(e){
+    var s = parseFloat(e.target.value); gapMs = s*1000; gapVal.textContent = s.toFixed(1)+" s";
+  });
+  $("minSlider").addEventListener("input", function(e){
+    var s = parseFloat(e.target.value); minPhraseMs = s*1000; minVal.textContent = s.toFixed(1)+" s";
+  });
+  function setGoal(g){ goal = Math.max(1, g); goalNum.textContent = goal; updateGoal(); }
+  $("goalUp").addEventListener("click", function(){ setGoal(goal+1); });
+  $("goalDown").addEventListener("click", function(){ setGoal(goal-1); });
+
+  $("resetBtn").addEventListener("click", function(){
+    count = 0; state = "idle"; countEl.textContent = "0"; lastrep.textContent = "";
+    countEl.classList.remove("done"); renderTally(); updateGoal();
+  });
+
+  $("calBtn").addEventListener("click", function(){
+    if(!running){ showErr("Start listening first, then calibrate."); return; }
+    clearErr(); calibrating = true; calMax = -100; calEnd = performance.now() + 2000;
+    statusText.textContent = "calibrating…";
+  });
+
+  // ---- init ----
+  placeThreshold(); syncThr(); updateGoal(); renderTally();
+})();
+</script>
+</body>
+</html>
