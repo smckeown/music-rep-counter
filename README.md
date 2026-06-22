@@ -70,7 +70,12 @@ Any reasonably current browser with microphone support (Chrome, Edge, Firefox, S
 
 ## Support
 
-If it saves you some counting and you'd like to buy me a coffee (add buy me a coffee link is unsupported)
+If it saves you some counting and you'd like to buy me a coffee (add buy me a coffee link eventually if I launch this thing).
+
+## FAQs
+
+### I am using the by pauses tab and the rep counter is not counting. 
+You may need to adjust the **ignore burst** setting, especially if you are playing a very short phrase. Adjust this down to 1 second or less, or turn it off altogether.  
 
 ## License
 
