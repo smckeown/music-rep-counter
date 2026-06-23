@@ -299,7 +299,7 @@
   // reference engine
   // reference engine (streaming subsequence DTW)
   var refSeq=null, refLenFrames=0, phraseMs=0, lastCountTime=-1e9, refPlaying=false;
-  var dpPrev=null, dpCur=null, lenPrev=null, lenCur=null, scSmooth=0, mPhase="peak", mPeak=0, mTrough=1, mEnergy=false;
+  var dpPrev=null, dpCur=null, lenPrev=null, lenCur=null, scSmooth=0, mArmed=true, repPeak=0, refractoryMs=900;
   var recState="needsRef", tempFrames=[], tempLevels=[], tempPcm=[], recStart=0, recTimerId=null;
   // shared audio
   var listening=false, recording=false;
@@ -392,7 +392,7 @@
     dpPrev=new Float64Array(M+1); dpCur=new Float64Array(M+1);
     lenPrev=new Float64Array(M+1); lenCur=new Float64Array(M+1);
     dpPrev[0]=0; for(i=1;i<=M;i++) dpPrev[i]=Infinity;
-    scSmooth=0; mPhase="peak"; mPeak=0; mTrough=1; mEnergy=false;
+    scSmooth=0; mArmed=true; repPeak=0;
   }
   // feed one live chroma frame; returns match score (1 - average alignment cost), 0..1
   function refStep(x){
@@ -518,6 +518,7 @@
   reviewUse.addEventListener("click", function(){
     if(tempFrames.length<4){ showErr("That take was too short to use. Record the phrase again."); return; }
     refSeq=tempFrames.slice(); refLenFrames=refSeq.length;
+    refractoryMs=Math.max(400, phraseMs*0.35);
     refLenEl.textContent=(phraseMs/1000).toFixed(1)+"s";
     resetCount(); recState="ready"; teardownMic(); layout();
   });
@@ -607,17 +608,15 @@
         var hit=scSmooth>=matchThreshold; matchLvl.classList.toggle("hit",hit);
         matchState.textContent=Math.round(scSmooth*100)+"%"; matchState.classList.toggle("on",hit);
         // a rep = one full traversal completing = a local PEAK in the match score
-        if(mPhase==="peak"){
-          if(energetic) mEnergy=true;
-          if(scSmooth>mPeak) mPeak=scSmooth;
-          else if(scSmooth<mPeak-0.10){
-            if(mPeak>=matchThreshold && mEnergy && (now-lastCountTime)>350){ count++; lastCountTime=now; registerRep("match "+Math.round(mPeak*100)+"%"); }
-            mPhase="trough"; mTrough=scSmooth;
+        // count one rep at the completion peak, then reset the alignment so the score
+        // falls to zero and the next rep has to build from scratch (no stall, no fragment matches)
+        if(mArmed){
+          if(energetic && scSmooth>repPeak) repPeak=scSmooth;
+          if(repPeak>=matchThreshold && scSmooth<repPeak-0.04 && (now-lastCountTime)>refractoryMs){
+            count++; lastCountTime=now; registerRep("match "+Math.round(repPeak*100)+"%");
+            initRefDP(); mArmed=false;
           }
-        } else {
-          if(scSmooth<mTrough) mTrough=scSmooth;
-          else if(scSmooth>mTrough+0.10){ mPhase="peak"; mPeak=scSmooth; mEnergy=energetic; }
-        }
+        } else if(scSmooth<matchThreshold-0.05){ mArmed=true; repPeak=0; }
         lastFeatureTime=now;
       }
     }
@@ -630,7 +629,7 @@
     countEl.classList.remove("bump"); void countEl.offsetWidth; countEl.classList.add("bump");
     lastrep.textContent=info; renderTally(); updateGoal();
   }
-  function resetCount(){ count=0; lastCountTime=-1e9; pState="idle"; scSmooth=0; mPhase="peak"; mPeak=0; mTrough=1; mEnergy=false; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
+  function resetCount(){ count=0; lastCountTime=-1e9; pState="idle"; scSmooth=0; mArmed=true; repPeak=0; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
   function updateGoal(){
     var done=count>=goal, remaining=Math.max(0,goal-count);
     goalView.textContent=goal; goalNum.textContent=goal;
