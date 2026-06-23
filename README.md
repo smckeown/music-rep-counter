@@ -29,11 +29,13 @@ If the count is off, open **Settings**:
 
 ## Privacy
 
-This app has been designed privacy-first. Everything stays in your browser:
+This app has been designed privacy-first:
 
-- **Nothing leaves your device.** Audio is analysed locally in the browser and is never recorded to a server, uploaded, or transmitted anywhere.
-- **No accounts, no tracking, no analytics, no ads.** The page makes no network calls at all — you can confirm that in your browser's developer tools.
-- **The only thing stored** is your own settings (goal and tuning), kept locally on your device so you don't have to set them each time.
+
+- Your audio never leaves your device. It's analysed locally in the browser and is never recorded to a server, uploaded, or transmitted anywhere.
+- No accounts, no profiles, no cookies, no ads.
+- One anonymous page-view count. The only network request the app makes is a privacy-friendly visit count via GoatCounter — no cookies, no cross-site tracking, and no personal data; just a tally so I can see roughly how many people use it. You can see this single request in your browser's developer tools.
+- The only thing stored on your device is your own settings (goal and tuning), kept locally so you don't have to set them each time.
 
 ## Running it yourself
 
