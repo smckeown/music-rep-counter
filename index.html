@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<!--
+Rep Counter
+Copyright (C) 2026 [Your Name]
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. See <https://www.gnu.org/licenses/>.
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,7 +19,7 @@
     --bg:#15121A; --bg2:#1E1A24; --bg3:#252029; --line:#2E2832;
     --ink:#F2EBDF; --muted:#9C9098; --faint:#665E69;
     --brass:#E2A14C; --brass-dim:#7A5C30; --brass-soft:rgba(226,161,76,.14);
-    --sage:#A4C29F; --sage-soft:rgba(164,194,159,.16);
+    --sage:#A4C29F;
     --serif:"Iowan Old Style",Georgia,"Times New Roman",serif;
     --sans:-apple-system,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
@@ -18,66 +27,24 @@
   html,body{height:100%}
   body{
     background:radial-gradient(120% 90% at 50% -10%, #1C1722 0%, var(--bg) 60%);
-    color:var(--ink); font-family:var(--sans);
-    -webkit-font-smoothing:antialiased; min-height:100dvh;
+    color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; min-height:100dvh;
     padding:max(18px,env(safe-area-inset-top)) 18px max(22px,env(safe-area-inset-bottom));
-    display:flex; flex-direction:column; gap:14px; max-width:520px; margin:0 auto;
+    display:flex; flex-direction:column; gap:16px; max-width:520px; margin:0 auto;
   }
-  .hidden{display:none !important}
+  button{touch-action:manipulation}
 
-  /* tabs */
-  .tabs{display:flex; gap:6px; background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:5px}
-  .tab{flex:1; padding:11px 8px; border-radius:10px; border:none; background:transparent; color:var(--muted);
-    font-family:var(--sans); font-size:14px; font-weight:600; cursor:pointer; transition:.15s; letter-spacing:.01em}
-  .tab.active{background:var(--brass); color:#1A1206}
-  .tabhint{font-size:12.5px; color:var(--faint); text-align:center; line-height:1.45; padding:0 8px}
-
-  /* top bar */
   .bar{display:flex; align-items:center; justify-content:space-between; gap:12px}
-  .status{display:flex; align-items:center; gap:9px; font-size:13px; letter-spacing:.14em;
-    text-transform:uppercase; color:var(--muted)}
+  .status{display:flex; align-items:center; gap:9px; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
   .dot{width:9px; height:9px; border-radius:50%; background:var(--faint); flex:none}
   .dot.live{background:var(--brass); animation:pulse 1.8s ease-out infinite}
   .dot.hot{background:var(--brass); box-shadow:0 0 12px 2px rgba(226,161,76,.6); animation:none}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(226,161,76,.4)}100%{box-shadow:0 0 0 12px rgba(226,161,76,0)}}
-  .mic{appearance:none; border:1px solid var(--line); background:var(--bg2); color:var(--ink);
-    font-family:var(--sans); font-size:14px; font-weight:600; padding:9px 16px; border-radius:999px;
-    cursor:pointer; transition:.15s; letter-spacing:.02em; white-space:nowrap}
+  .mic{appearance:none; border:1px solid var(--line); background:var(--bg2); color:var(--ink); font-family:var(--sans);
+    font-size:14px; font-weight:600; padding:9px 16px; border-radius:999px; cursor:pointer; transition:.15s; letter-spacing:.02em; white-space:nowrap}
   .mic:hover{border-color:var(--brass-dim)}
   .mic.on{background:var(--brass); color:#1A1206; border-color:var(--brass)}
-  .mic:disabled{opacity:.4; cursor:not-allowed}
 
-  /* reference chip */
-  .refchip{display:flex; align-items:center; justify-content:space-between; gap:10px;
-    background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:11px 14px; font-size:13px}
-  .refchip .meta{color:var(--muted)}
-  .refchip .meta b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
-  .refchip button{appearance:none; border:none; background:none; color:var(--brass); font-size:13px;
-    font-weight:600; cursor:pointer; font-family:var(--sans)}
-  .refchip .refbtns{display:flex; gap:16px; align-items:center}
-
-  /* record / review card */
-  .card{background:var(--bg2); border:1px solid var(--line); border-radius:22px; padding:24px 22px}
-  .card h1{font-family:var(--serif); font-size:22px; font-weight:600; letter-spacing:-.01em; margin-bottom:8px}
-  .card p{font-size:14.5px; color:var(--muted); line-height:1.55; margin-bottom:18px}
-  .recbtn{width:100%; padding:16px; border-radius:14px; border:1px solid var(--brass); background:var(--brass);
-    color:#1A1206; font-family:var(--sans); font-size:16px; font-weight:700; cursor:pointer; transition:.15s; letter-spacing:.01em}
-  .recbtn:hover{filter:brightness(1.06)}
-  .recbtn.stop{background:var(--bg3); color:var(--ink); border-color:var(--brass-dim)}
-  .rectimer{text-align:center; font-size:40px; font-weight:800; font-variant-numeric:tabular-nums; margin:6px 0 14px; letter-spacing:-.02em}
-  .recmeter{position:relative; height:14px; background:var(--bg3); border-radius:7px; overflow:hidden; margin-bottom:18px}
-  .recmeter .lvl{position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--brass); border-radius:7px}
-  .review audio{width:100%; margin:4px 0 16px; height:38px}
-  .review .pair{display:flex; gap:10px}
-  .review .pair button{flex:1; padding:14px; border-radius:13px; font-family:var(--sans); font-size:15px;
-    font-weight:700; cursor:pointer; transition:.15s; border:1px solid var(--line)}
-  .review .use{background:var(--brass); color:#1A1206; border-color:var(--brass)}
-  .review .redo{background:var(--bg3); color:var(--ink)}
-  .review .pair button:hover{filter:brightness(1.06)}
-  .tooshort{font-size:13px; color:var(--brass); margin-bottom:14px; line-height:1.5}
-
-  /* hero counter */
-  .hero{background:var(--bg2); border:1px solid var(--line); border-radius:22px; padding:24px 22px 20px; text-align:center; position:relative}
+  .hero{background:var(--bg2); border:1px solid var(--line); border-radius:22px; padding:24px 22px 20px; text-align:center}
   .eyebrow{font-family:var(--serif); font-style:italic; font-size:15px; color:var(--brass); letter-spacing:.02em; margin-bottom:2px}
   .count{font-size:clamp(80px,28vw,140px); font-weight:800; line-height:.92; letter-spacing:-.03em; font-variant-numeric:tabular-nums; transition:color .4s}
   .count.bump{animation:bump .32s cubic-bezier(.2,1.4,.4,1)}
@@ -89,12 +56,11 @@
   .track{margin-top:16px; height:6px; border-radius:99px; background:var(--bg3); overflow:hidden}
   .fill{height:100%; width:0; background:var(--brass); border-radius:99px; transition:width .35s ease}
   .fill.done{background:var(--sage)}
-  .resetfront{margin-top:16px; width:100%; padding:11px; border-radius:12px; border:1px solid var(--line);
-    background:transparent; color:var(--muted); font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer; transition:.15s; letter-spacing:.04em}
+  .resetfront{margin-top:16px; width:100%; padding:11px; border-radius:12px; border:1px solid var(--line); background:transparent;
+    color:var(--muted); font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer; transition:.15s; letter-spacing:.04em}
   .resetfront:hover{border-color:var(--brass-dim); color:var(--ink)}
 
-  /* tally */
-  .tally{display:flex; flex-wrap:wrap; gap:14px 18px; align-items:flex-end; min-height:46px; padding:2px 2px 0; margin-top:16px}
+  .tally{display:flex; flex-wrap:wrap; gap:14px 18px; align-items:flex-end; min-height:46px; padding:2px 2px 0}
   .grp{position:relative; display:flex; gap:6px; height:40px; align-items:center}
   .grp .s{width:3px; height:34px; background:var(--brass); border-radius:2px; transform-origin:bottom; animation:draw .28s ease both}
   .grp.done .s{background:var(--sage)}
@@ -104,27 +70,19 @@
   @keyframes drawx{from{transform:rotate(-24deg) scaleX(0)}to{transform:rotate(-24deg) scaleX(1)}}
   .tally-empty{color:var(--faint); font-size:13.5px; font-style:italic; font-family:var(--serif)}
 
-  /* meters */
-  .panel{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:15px 16px 16px; margin-top:16px}
-  .panel.tight{margin-top:8px}
+  .panel{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:15px 16px 16px}
   .panel h2{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600;
     margin-bottom:10px; display:flex; justify-content:space-between; align-items:center}
   .panel h2 .state{color:var(--faint); letter-spacing:.04em}
   .panel h2 .state.on{color:var(--brass)}
   .meter{position:relative; height:16px; background:var(--bg3); border-radius:8px; overflow:hidden}
-  .meter .lvl{position:absolute; left:0; top:0; bottom:0; width:0%; border-radius:8px; transition:width .05s linear}
-  .meter .lvl.input{background:var(--brass-dim)}
-  .meter .lvl.input.hot{background:var(--brass)}
-  .meter .lvl.match{background:var(--brass-dim)}
-  .meter .lvl.match.hit{background:var(--sage)}
+  .meter .lvl{position:absolute; left:0; top:0; bottom:0; width:0%; border-radius:8px; background:var(--brass-dim); transition:width .05s linear}
+  .meter .lvl.hot{background:var(--brass)}
   .meter .thr{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--ink); opacity:.85}
-  .meter .thr::after{content:attr(data-label); position:absolute; top:-15px; left:50%; transform:translateX(-50%);
-    font-size:9px; letter-spacing:.06em; color:var(--muted); white-space:nowrap}
+  .meter .thr::after{content:"threshold"; position:absolute; top:-15px; left:50%; transform:translateX(-50%); font-size:9px; letter-spacing:.06em; color:var(--muted); white-space:nowrap}
 
-  /* settings */
-  details{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:0 16px; margin-top:16px}
-  summary{list-style:none; cursor:pointer; padding:15px 0; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
-    color:var(--muted); font-weight:600; display:flex; justify-content:space-between}
+  details{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:0 16px}
+  summary{list-style:none; cursor:pointer; padding:15px 0; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600; display:flex; justify-content:space-between}
   summary::-webkit-details-marker{display:none}
   summary .chev{transition:.2s; color:var(--faint)}
   details[open] summary .chev{transform:rotate(180deg)}
@@ -136,18 +94,20 @@
   input[type=range]{width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:99px; background:var(--bg3); outline:none}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--brass); cursor:pointer; border:3px solid var(--bg2)}
   input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; background:var(--brass); cursor:pointer; border:3px solid var(--bg2)}
-  .goalstep{display:flex; align-items:center; gap:14px}
-  .goalstep button{width:34px; height:34px; border-radius:10px; border:1px solid var(--line); background:var(--bg3); color:var(--ink); font-size:20px; cursor:pointer; line-height:1}
+  .goalstep{display:flex; align-items:center; gap:12px}
+  .goalstep button{width:40px; height:40px; border-radius:10px; border:1px solid var(--line); background:var(--bg3); color:var(--ink); font-size:22px; cursor:pointer; line-height:1; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none}
   .goalstep button:hover{border-color:var(--brass-dim)}
-  .goalstep .g{font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; min-width:28px; text-align:center}
-  .calbtn{width:100%; margin-top:11px; padding:11px; border-radius:11px; border:1px solid var(--line); background:var(--bg3);
-    color:var(--ink); font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer; transition:.15s}
+  .goalstep button:active{background:var(--brass); color:#1A1206; border-color:var(--brass)}
+  .goalstep input{width:74px; text-align:center; font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; background:var(--bg3); border:1px solid var(--line); border-radius:10px; color:var(--ink); padding:8px 4px; font-family:var(--sans); -moz-appearance:textfield}
+  .goalstep input:focus{outline:none; border-color:var(--brass-dim)}
+  .goalstep input::-webkit-outer-spin-button,.goalstep input::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+  .calbtn{width:100%; margin-top:11px; padding:11px; border-radius:11px; border:1px solid var(--line); background:var(--bg3); color:var(--ink); font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer; transition:.15s}
   .calbtn:hover{border-color:var(--brass-dim)}
-  .done{width:100%; padding:13px; border-radius:12px; border:1px solid var(--brass-dim); background:var(--brass-soft);
-    color:var(--brass); font-size:14px; font-weight:700; cursor:pointer; transition:.15s; letter-spacing:.02em}
+  .done{width:100%; padding:13px; border-radius:12px; border:1px solid var(--brass-dim); background:var(--brass-soft); color:var(--brass); font-size:14px; font-weight:700; cursor:pointer; transition:.15s; letter-spacing:.02em}
   .done:hover{background:var(--brass); color:#1A1206; border-color:var(--brass)}
 
-  .note{font-size:12.5px; color:var(--faint); text-align:center; line-height:1.5; padding:0 6px; margin-top:4px}
+  .note{font-size:12.5px; color:var(--faint); text-align:center; line-height:1.5; padding:0 6px}
+  .ver{text-align:center; font-size:11px; color:var(--faint); letter-spacing:.12em; margin-top:-6px}
   .err{display:none; background:var(--brass-soft); border:1px solid var(--brass-dim); color:var(--ink); border-radius:14px; padding:14px 16px; font-size:13.5px; line-height:1.5}
   .err.show{display:block}
 
@@ -155,12 +115,6 @@
 </style>
 </head>
 <body>
-  <div class="tabs">
-    <button class="tab active" id="tabPauses" data-mode="pauses">By pauses</button>
-    <button class="tab" id="tabReference" data-mode="reference">By reference</button>
-  </div>
-  <div class="tabhint" id="tabHint">Counts a rep each time you pause briefly between repeats.</div>
-
   <div class="bar">
     <div class="status"><span class="dot" id="dot"></span><span id="statusText">ready</span></div>
     <button class="mic" id="micBtn">Start listening</button>
@@ -168,114 +122,64 @@
 
   <div class="err" id="err"></div>
 
-  <!-- reference chip -->
-  <div class="refchip hidden" id="refChip">
-    <span class="meta">Reference set · <b id="refLen">0.0s</b></span>
-    <span class="refbtns"><button id="playRefBtn">▶ Play</button><button id="rerecBtn">Record again</button></span>
+  <div class="hero">
+    <div class="eyebrow">reps</div>
+    <div class="count" id="count">0</div>
+    <div class="goalline" id="goalline">goal <b id="goalView">3</b> · 3 to go</div>
+    <div class="lastrep" id="lastrep"></div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <button class="resetfront" id="resetFront">Reset count</button>
   </div>
 
-  <!-- record / review card (reference mode only) -->
-  <div class="card hidden" id="recordCard">
-    <h1>Record your phrase</h1>
-    <p>Play your practice phrase once, the way a clean rep should sound. Tap record, play it through, then stop. You can listen back and re-record until it's right — that take becomes what the counter listens for.</p>
-    <div id="recIdle"><button class="recbtn" id="recStartBtn">Record reference</button></div>
-    <div id="recActive" class="hidden">
-      <div class="rectimer" id="recTimer">0.0s</div>
-      <div class="recmeter"><div class="lvl" id="recLvl"></div></div>
-      <button class="recbtn stop" id="recStopBtn">Stop</button>
-    </div>
-    <div id="recReview" class="review hidden">
-      <p style="margin-bottom:10px">Listen back. If it's a clean take, use it. If not, record again.</p>
-      <div class="tooshort hidden" id="tooShort">That's very short for a phrase — record again if it cut off early.</div>
-      <audio id="refAudio" controls></audio>
-      <div class="pair">
-        <button class="redo" id="reviewRedo">Record again</button>
-        <button class="use" id="reviewUse">Use this reference</button>
-      </div>
-    </div>
+  <div class="tally" id="tally"><span class="tally-empty">your reps will tally up here</span></div>
+
+  <div class="panel">
+    <h2>Live input <span class="state" id="inputState">silent</span></h2>
+    <div class="meter"><div class="lvl" id="inputLvl"></div><div class="thr" id="inputThr"></div></div>
   </div>
 
-  <!-- counter -->
-  <div id="counter">
-    <div class="hero">
-      <div class="eyebrow">reps</div>
-      <div class="count" id="count">0</div>
-      <div class="goalline" id="goalline">goal <b id="goalView">3</b> · 3 to go</div>
-      <div class="lastrep" id="lastrep"></div>
-      <div class="track"><div class="fill" id="fill"></div></div>
-      <button class="resetfront" id="resetFront">Reset count</button>
+  <details id="settings">
+    <summary>Settings <span class="chev">▾</span></summary>
+
+    <div class="ctl">
+      <div class="goalstep">
+        <label style="flex:1">Goal</label>
+        <button id="goalDown" aria-label="lower goal">–</button>
+        <input id="goalInput" type="number" inputmode="numeric" min="1" value="3" aria-label="goal">
+        <button id="goalUp" aria-label="raise goal">+</button>
+      </div>
+      <div class="hint">How many in a row you're aiming for. Type a number, or hold +/– to run it up. Three is a solid baseline.</div>
     </div>
 
-    <div class="tally" id="tally"><span class="tally-empty">your reps will tally up here</span></div>
-
-    <div class="panel" id="matchPanel">
-      <h2>Match to reference <span class="state" id="matchState">—</span></h2>
-      <div class="meter">
-        <div class="lvl match" id="matchLvl"></div>
-        <div class="thr" id="matchThr" data-label="count line"></div>
-      </div>
+    <div class="ctl">
+      <div class="row"><label>Sensitivity</label><span class="val" id="thrVal">−45 dB</span></div>
+      <input type="range" id="thrSlider" min="-70" max="-20" value="-45" step="1">
+      <div class="hint">Sets the line between playing and silence on the input meter. Drag left if soft playing reads as silence, right if room noise reads as playing.</div>
+      <button class="calbtn" id="calBtn">Calibrate from room silence</button>
     </div>
 
-    <div class="panel tight">
-      <h2>Live input <span class="state" id="inputState">silent</span></h2>
-      <div class="meter">
-        <div class="lvl input" id="inputLvl"></div>
-        <div class="thr hidden" id="inputThr" data-label="threshold"></div>
-      </div>
+    <div class="ctl">
+      <div class="row"><label>Gap between reps</label><span class="val" id="gapVal">0.5 s</span></div>
+      <input type="range" id="gapSlider" min="0.3" max="2.5" value="0.5" step="0.1">
+      <div class="hint">It counts a rep when you go quiet for this long, so leave a short breath between repeats.</div>
     </div>
 
-    <details id="settings">
-      <summary>Settings <span class="chev">▾</span></summary>
+    <div class="ctl">
+      <div class="row"><label>Minimum phrase length</label><span class="val" id="minVal">2.0 s</span></div>
+      <input type="range" id="minSlider" min="0.3" max="6" value="2.0" step="0.1">
+      <div class="hint">Sound shorter than this won't count — filters out coughs and stray notes.</div>
+    </div>
 
-      <div class="ctl">
-        <div class="goalstep">
-          <label style="flex:1">Goal</label>
-          <button id="goalDown" aria-label="lower goal">–</button>
-          <span class="g" id="goalNum">3</span>
-          <button id="goalUp" aria-label="raise goal">+</button>
-        </div>
-        <div class="hint">How many in a row you're aiming for. Three is a solid baseline; raise it for a longer run.</div>
-      </div>
+    <div class="ctl"><button class="done" id="doneBtn">Done — back to counter</button></div>
+  </details>
 
-      <!-- pauses-mode settings -->
-      <div class="ctl">
-        <div class="row"><label>Sensitivity</label><span class="val" id="thrVal">−45 dB</span></div>
-        <input type="range" id="thrSlider" min="-70" max="-20" value="-45" step="1">
-        <div class="hint">Sets the line between playing and silence on the input meter. Drag left if soft playing reads as silence, right if room noise reads as playing.</div>
-        <button class="calbtn" id="calBtn">Calibrate from room silence</button>
-      </div>
-
-      <div class="ctl pausesOnly">
-        <div class="row"><label>Gap between reps</label><span class="val" id="gapVal">0.5 s</span></div>
-        <input type="range" id="gapSlider" min="0.3" max="2.5" value="0.5" step="0.1">
-        <div class="hint">How long a pause closes one rep. It counts a rep when you go quiet for this long, so leave a short breath between repeats.</div>
-      </div>
-
-      <div class="ctl pausesOnly">
-        <div class="row"><label>Ignore bursts under</label><span class="val" id="minVal">2.0 s</span></div>
-        <input type="range" id="minSlider" min="0.3" max="6" value="2.0" step="0.1">
-        <div class="hint">Filters out coughs and stray notes — anything shorter than this won't count as a rep.</div>
-      </div>
-
-      <!-- reference-mode settings -->
-      <div class="ctl refOnly">
-        <div class="row"><label>Match strictness</label><span class="val" id="matchVal">0.60</span></div>
-        <input type="range" id="matchSlider" min="0.30" max="0.90" value="0.60" step="0.02">
-        <div class="hint">Where the count line sits on the match meter. Watch the meter while you play: set this just below where your good reps peak, and above the dips between reps. Higher = fussier.</div>
-      </div>
-
-      <div class="ctl"><button class="done" id="doneBtn">Done — back to counter</button></div>
-    </details>
-  </div>
-
-  <div class="note">Everything runs on your device. Nothing is recorded to a server, uploaded, or sent anywhere.</div>
+  <div class="note">Everything runs on your device. Nothing is recorded, uploaded, or sent anywhere.</div>
+  <div class="ver" id="ver"></div>
 
 <script>
 (function(){
   "use strict";
-
-  // ---------- config ----------
-  var HOP_MS=50, N=48, HN=16, EVAL_MS=90, MIN_HZ=55, MAX_HZ=5000;
+  var VERSION="1.0.0";
 
   // ---------- persisted settings ----------
   var store=(function(){
@@ -284,343 +188,83 @@
                set:function(key,val){ try{ localStorage.setItem(key,String(val)); }catch(e){} } };
     }catch(e){ return { get:function(_k,def){return def;}, set:function(){} }; }
   })();
-
-  var mode=store.get("mode","pauses");
+  var thresholdDb=parseFloat(store.get("thr","-45"));
+  var gapMs=parseFloat(store.get("gap","0.5"))*1000;
+  var minMs=parseFloat(store.get("min","2.0"))*1000;
   var goal=parseInt(store.get("goal","3"),10)||3;
-  var pThresholdDb=parseFloat(store.get("pThr","-45"));
-  var pGapMs=parseFloat(store.get("pGap","0.5"))*1000;
-  var pMinMs=parseFloat(store.get("pMin","2.0"))*1000;
-  var matchThreshold=parseFloat(store.get("matchThreshold","0.60"));
 
   // ---------- state ----------
-  var count=0;
-  // pauses engine
-  var smoothedDb=-100, pState="idle", pBurstStart=0, pLastLoud=0, calibrating=false, calMax=-100, calEnd=0;
-  // reference engine
-  // reference engine (streaming subsequence DTW)
-  var refSeq=null, refLenFrames=0, phraseMs=0, lastCountTime=-1e9, refPlaying=false;
-  var dpPrev=null, dpCur=null, lenPrev=null, lenCur=null, scSmooth=0, mArmed=true, repPeak=0, refractoryMs=900;
-  var recState="needsRef", tempFrames=[], tempLevels=[], tempPcm=[], recStart=0, recTimerId=null;
-  // shared audio
-  var listening=false, recording=false;
-  var audioCtx, micStream, srcNode, analyser, proc, silentGain, rafId;
-  var freqData, timeData, lastFeatureTime=0, lastEvalTime=0, wakeLock=null;
+  var count=0, listening=false, state="idle", burstStart=0, lastLoud=0, smoothedDb=-100;
+  var calibrating=false, calMax=-100, calEnd=0;
+  var audioCtx, micStream, srcNode, analyser, timeData, rafId, wakeLock=null;
 
-  // ---------- elements ----------
-  var $=function(id){return document.getElementById(id);};
-  var tabPauses=$("tabPauses"), tabReference=$("tabReference"), tabHint=$("tabHint");
+  var $=function(id){ return document.getElementById(id); };
   var dot=$("dot"), statusText=$("statusText"), micBtn=$("micBtn"), errBox=$("err");
-  var refChip=$("refChip"), refLenEl=$("refLen"), rerecBtn=$("rerecBtn"), playRefBtn=$("playRefBtn");
-  var recordCard=$("recordCard"), recIdle=$("recIdle"), recActive=$("recActive"), recReview=$("recReview");
-  var recStartBtn=$("recStartBtn"), recStopBtn=$("recStopBtn"), recTimer=$("recTimer"), recLvl=$("recLvl");
-  var refAudio=$("refAudio"), reviewUse=$("reviewUse"), reviewRedo=$("reviewRedo"), tooShort=$("tooShort");
-  var counter=$("counter"), countEl=$("count"), goalline=$("goalline"), goalView=$("goalView");
-  var lastrep=$("lastrep"), fill=$("fill"), resetFront=$("resetFront"), tally=$("tally");
-  var matchPanel=$("matchPanel"), matchLvl=$("matchLvl"), matchThr=$("matchThr"), matchState=$("matchState");
-  var inputLvl=$("inputLvl"), inputThr=$("inputThr"), inputState=$("inputState");
-  var goalNum=$("goalNum"), thrVal=$("thrVal"), gapVal=$("gapVal"), minVal=$("minVal"), matchVal=$("matchVal");
+  var countEl=$("count"), goalline=$("goalline"), goalView=$("goalView"), lastrep=$("lastrep"), fill=$("fill");
+  var resetFront=$("resetFront"), tally=$("tally"), inputLvl=$("inputLvl"), inputThr=$("inputThr"), inputState=$("inputState");
+  var goalInput=$("goalInput"), thrVal=$("thrVal"), gapVal=$("gapVal"), minVal=$("minVal");
 
-  function showErr(m){errBox.textContent=m; errBox.classList.add("show");}
-  function clearErr(){errBox.classList.remove("show");}
+  function showErr(m){ errBox.textContent=m; errBox.classList.add("show"); }
+  function clearErr(){ errBox.classList.remove("show"); }
+  function dbToPct(db){ return Math.max(0, Math.min(100, (db+70)/60*100)); } // -70..-10 dB -> 0..100
 
-  // ---------- audio graph ----------
-  async function ensureMic(){
-    if(audioCtx) return true;
-    try{ micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}); }
-    catch(e){ showErr("Microphone unavailable. Allow mic access, and make sure the page is opened over https (a real link, not the file on disk) — browsers block the mic otherwise."); return false; }
+  // ---------- audio ----------
+  async function start(){
+    clearErr();
+    try{ micStream=await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false } }); }
+    catch(e){ showErr("Microphone unavailable. Allow mic access, and make sure the page is opened over https (a real link, not the file on disk) — browsers block the mic otherwise."); return; }
     audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==="suspended"){ try{await audioCtx.resume();}catch(e){} }
+    if(audioCtx.state==="suspended"){ try{ await audioCtx.resume(); }catch(e){} }
     srcNode=audioCtx.createMediaStreamSource(micStream);
-    analyser=audioCtx.createAnalyser(); analyser.fftSize=2048; srcNode.connect(analyser);
-    freqData=new Float32Array(analyser.frequencyBinCount); timeData=new Float32Array(analyser.fftSize);
-    return true;
+    analyser=audioCtx.createAnalyser(); analyser.fftSize=1024; srcNode.connect(analyser);
+    timeData=new Float32Array(analyser.fftSize);
+    smoothedDb=-100; state="idle"; listening=true;
+    micBtn.textContent="Stop"; micBtn.classList.add("on");
+    statusText.textContent="listening"; dot.classList.add("live");
+    requestWake(); loop();
   }
-  function teardownMic(){
-    if(rafId) cancelAnimationFrame(rafId); rafId=null;
-    stopPcmTap();
+  function stop(){
+    listening=false;
+    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
     if(micStream){ micStream.getTracks().forEach(function(t){t.stop();}); micStream=null; }
     if(audioCtx){ try{audioCtx.close();}catch(e){} audioCtx=null; }
     srcNode=null; analyser=null;
-  }
-  function startPcmTap(){
-    if(!audioCtx||proc) return;
-    proc=audioCtx.createScriptProcessor(4096,1,1);
-    silentGain=audioCtx.createGain(); silentGain.gain.value=0;
-    proc.onaudioprocess=function(e){ if(!recording) return; tempPcm.push(new Float32Array(e.inputBuffer.getChannelData(0))); };
-    srcNode.connect(proc); proc.connect(silentGain); silentGain.connect(audioCtx.destination);
-  }
-  function stopPcmTap(){
-    if(proc){ try{proc.disconnect();}catch(e){} proc.onaudioprocess=null; proc=null; }
-    if(silentGain){ try{silentGain.disconnect();}catch(e){} silentGain=null; }
+    micBtn.textContent="Start listening"; micBtn.classList.remove("on");
+    statusText.textContent="ready"; dot.classList.remove("live","hot");
+    inputLvl.style.width="0%"; inputLvl.classList.remove("hot");
+    inputState.textContent="silent"; inputState.classList.remove("on");
+    releaseWake();
   }
   async function requestWake(){ try{ if("wakeLock" in navigator){ wakeLock=await navigator.wakeLock.request("screen"); } }catch(e){} }
   function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
 
-  // ---------- features ----------
   function rawDb(){
     analyser.getFloatTimeDomainData(timeData);
     var s=0,i,v; for(i=0;i<timeData.length;i++){ v=timeData[i]; s+=v*v; }
     return 20*Math.log10(Math.sqrt(s/timeData.length)+1e-7);
   }
-  function dbToPct(db){ return Math.max(0,Math.min(100,(db+70)/60*100)); } // -70..-10 -> 0..100
-  function computeChroma(){
-    analyser.getFloatFrequencyData(freqData);
-    var binHz=audioCtx.sampleRate/analyser.fftSize, chroma=new Float32Array(12), i,f,mag,midi,pc;
-    var lo=Math.max(1,Math.floor(MIN_HZ/binHz)), hi=Math.min(freqData.length-1,Math.ceil(MAX_HZ/binHz));
-    for(i=lo;i<=hi;i++){ f=i*binHz; mag=Math.pow(10,freqData[i]/20); midi=69+12*Math.log2(f/440);
-      pc=((Math.round(midi)%12)+12)%12; chroma[pc]+=mag; }
-    var norm=0; for(i=0;i<12;i++) norm+=chroma[i]*chroma[i]; norm=Math.sqrt(norm);
-    if(norm>1e-9){ for(i=0;i<12;i++) chroma[i]/=norm; }
-    return chroma;
-  }
 
-  // ---------- matching ----------
-  function resampleFrames(frames,n){
-    var len=frames.length,out=[],i,idx;
-    if(len===0) return out;
-    if(len===1){ for(i=0;i<n;i++) out.push(frames[0]); return out; }
-    for(i=0;i<n;i++){ idx=Math.round(i*(len-1)/(n-1)); out.push(frames[idx]); }
-    return out;
-  }
-  function frameDist(a,b){ var d=0,i; for(i=0;i<12;i++) d+=a[i]*b[i]; var c=1-d; return c<0?0:c; }
-
-  // ----- streaming subsequence DTW: align the live stream against the full reference -----
-  // dpPrev[i] = best cost of aligning reference[0..i] to some run of live frames ending now.
-  // Row 0 is pinned to 0 every frame, so a match can begin at any moment (tempo-free).
-  function initRefDP(){
-    var M=refSeq?refSeq.length:0, i;
-    dpPrev=new Float64Array(M+1); dpCur=new Float64Array(M+1);
-    lenPrev=new Float64Array(M+1); lenCur=new Float64Array(M+1);
-    dpPrev[0]=0; for(i=1;i<=M;i++) dpPrev[i]=Infinity;
-    scSmooth=0; mArmed=true; repPeak=0;
-  }
-  // feed one live chroma frame; returns match score (1 - average alignment cost), 0..1
-  function refStep(x){
-    var M=refSeq.length, i, c, best, bestLen;
-    dpCur[0]=0; lenCur[0]=0;
-    for(i=1;i<=M;i++){
-      c=frameDist(refSeq[i-1], x);
-      best=dpPrev[i-1]; bestLen=lenPrev[i-1];                       // diagonal
-      if(dpPrev[i]<best){ best=dpPrev[i]; bestLen=lenPrev[i]; }     // hold reference, advance live
-      if(dpCur[i-1]<best){ best=dpCur[i-1]; bestLen=lenCur[i-1]; }  // hold live, advance reference
-      dpCur[i]=c+best; lenCur[i]=bestLen+1;
-    }
-    var t=dpPrev; dpPrev=dpCur; dpCur=t; t=lenPrev; lenPrev=lenCur; lenCur=t;
-    var L=lenPrev[M]>0?lenPrev[M]:1, sc=1-dpPrev[M]/L;
-    return sc<0?0:(sc>1?1:sc);
-  }
-  function dtwScore(A,B){
-    var n=A.length, prev=new Float64Array(n+1), cur=new Float64Array(n+1), i,j,c,m;
-    for(j=0;j<=n;j++) prev[j]=Infinity; prev[0]=0;
-    for(i=1;i<=n;i++){ cur[0]=Infinity;
-      for(j=1;j<=n;j++){ c=frameDist(A[i-1],B[j-1]); m=prev[j]; if(prev[j-1]<m)m=prev[j-1]; if(cur[j-1]<m)m=cur[j-1]; cur[j]=c+m; }
-      var t=prev; prev=cur; cur=t; }
-    var sc=1-prev[n]/n; return sc<0?0:(sc>1?1:sc);
-  }
-
-  // ---------- layout ----------
-  function layout(){
-    var refReady=(mode==="reference" && recState==="ready");
-    var inRecFlow=(mode==="reference" && recState!=="ready");
-    recordCard.classList.toggle("hidden", !inRecFlow);
-    recIdle.classList.toggle("hidden", !(inRecFlow && recState==="needsRef"));
-    recActive.classList.toggle("hidden", !(inRecFlow && recState==="recording"));
-    recReview.classList.toggle("hidden", !(inRecFlow && recState==="review"));
-    refChip.classList.toggle("hidden", !refReady);
-    counter.classList.toggle("hidden", inRecFlow);
-    matchPanel.classList.toggle("hidden", mode!=="reference");
-    inputThr.classList.remove("hidden");
-    document.querySelectorAll(".pausesOnly").forEach(function(el){ el.classList.toggle("hidden", mode!=="pauses"); });
-    document.querySelectorAll(".refOnly").forEach(function(el){ el.classList.toggle("hidden", mode!=="reference"); });
-    micBtn.disabled = (mode==="reference" && !refSeq) || inRecFlow;
-    tabPauses.classList.toggle("active", mode==="pauses");
-    tabReference.classList.toggle("active", mode==="reference");
-    tabHint.textContent = mode==="pauses"
-      ? "Counts a rep each time you pause briefly between repeats."
-      : "Record your phrase once, then it counts every recurrence — no pauses needed.";
-    if(!listening){
-      statusText.textContent = inRecFlow ? (recState==="recording"?"recording reference":recState==="review"?"review take":"no reference yet")
-                                         : "ready";
-    }
-  }
-
-  // ---------- tabs ----------
-  function setMode(m){
-    if(m===mode) return;
-    if(listening) stopListening();
-    if(recording) cancelRecording();
-    mode=m; store.set("mode",m);
-    layout(); placeMarkers();
-  }
-  tabPauses.addEventListener("click", function(){ setMode("pauses"); });
-  tabReference.addEventListener("click", function(){ setMode("reference"); });
-
-  // ---------- reference recording ----------
-  recStartBtn.addEventListener("click", startRecording);
-  reviewRedo.addEventListener("click", startRecording);
-  rerecBtn.addEventListener("click", function(){ if(listening) stopListening(); recState="needsRef"; layout(); startRecording(); });
-  async function startRecording(){
-    clearErr();
-    if(!(await ensureMic())) return;
-    tempFrames=[]; tempLevels=[]; tempPcm=[]; recStart=performance.now(); recording=true; lastFeatureTime=0;
-    startPcmTap(); recState="recording"; layout();
-    if(recTimerId) clearInterval(recTimerId);
-    recTimerId=setInterval(function(){ recTimer.textContent=((performance.now()-recStart)/1000).toFixed(1)+"s"; },100);
-    recLoop();
-  }
-  recStopBtn.addEventListener("click", finishRecording);
-  function recLoop(){
-    if(!recording) return;
-    var now=performance.now();
-    if(now-lastFeatureTime>=HOP_MS){ var d=rawDb(); tempFrames.push(computeChroma()); tempLevels.push(d); recLvl.style.width=dbToPct(d)+"%"; lastFeatureTime=now; }
-    rafId=requestAnimationFrame(recLoop);
-  }
-  function trimSilence(){
-    var n=tempLevels.length, i, peak=-Infinity;
-    if(n<3 || n!==tempFrames.length) return null;
-    for(i=0;i<n;i++) if(tempLevels[i]>peak) peak=tempLevels[i];
-    if(peak===-Infinity) return null;
-    var gate=peak-20, first=-1, last=-1;
-    for(i=0;i<n;i++){ if(tempLevels[i]>gate){ if(first<0)first=i; last=i; } }
-    if(first<0) return null;
-    first=Math.max(0,first-2); last=Math.min(n-1,last+2); // ~100ms padding each side
-    if(last-first<3) return null;
-    return {start:first,end:last};
-  }
-  function finishRecording(){
-    recording=false;
-    if(recTimerId){ clearInterval(recTimerId); recTimerId=null; }
-    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
-    stopPcmTap();
-    var sr=audioCtx?audioCtx.sampleRate:44100;
-    // flatten captured PCM
-    var total=0,i; for(i=0;i<tempPcm.length;i++) total+=tempPcm[i].length;
-    var flat=new Float32Array(total),off=0; for(i=0;i<tempPcm.length;i++){ flat.set(tempPcm[i],off); off+=tempPcm[i].length; }
-    // trim silence off both ends, in step with the audio
-    var t=trimSilence();
-    if(t){
-      tempFrames=tempFrames.slice(t.start,t.end+1);
-      var a=Math.round(t.start*HOP_MS/1000*sr), b=Math.round((t.end+1)*HOP_MS/1000*sr);
-      flat=flat.subarray(Math.max(0,a),Math.min(flat.length,b));
-    }
-    phraseMs=tempFrames.length*HOP_MS;
-    refAudio.src=encodeWavUrl([flat], sr);
-    tooShort.classList.toggle("hidden", phraseMs>=1200);
-    recState="review"; layout();
-  }
-  function cancelRecording(){
-    recording=false;
-    if(recTimerId){ clearInterval(recTimerId); recTimerId=null; }
-    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
-    stopPcmTap(); teardownMic();
-    recState = refSeq ? "ready" : "needsRef";
-  }
-  reviewUse.addEventListener("click", function(){
-    if(tempFrames.length<4){ showErr("That take was too short to use. Record the phrase again."); return; }
-    refSeq=tempFrames.slice(); refLenFrames=refSeq.length;
-    refractoryMs=Math.max(400, phraseMs*0.35);
-    refLenEl.textContent=(phraseMs/1000).toFixed(1)+"s";
-    resetCount(); recState="ready"; teardownMic(); layout();
-  });
-
-  // play the reference back (also during a session)
-  playRefBtn.addEventListener("click", function(){
-    if(!refAudio.src) return;
-    if(refAudio.paused){ refPlaying=true; refAudio.currentTime=0; refAudio.play(); playRefBtn.textContent="⏸ Stop"; }
-    else { refAudio.pause(); }
-  });
-  function endRefPlay(){ refPlaying=false; playRefBtn.textContent="▶ Play"; if(refSeq) initRefDP(); }
-  refAudio.addEventListener("ended", endRefPlay);
-  refAudio.addEventListener("pause", endRefPlay);
-
-  // ---------- WAV ----------
-  function encodeWavUrl(chunks, sampleRate){
-    var len=0,i; for(i=0;i<chunks.length;i++) len+=chunks[i].length;
-    var pcm=new Float32Array(len),off=0; for(i=0;i<chunks.length;i++){ pcm.set(chunks[i],off); off+=chunks[i].length; }
-    var buf=new ArrayBuffer(44+len*2),view=new DataView(buf);
-    function wstr(o,s){ for(var k=0;k<s.length;k++) view.setUint8(o+k,s.charCodeAt(k)); }
-    wstr(0,"RIFF"); view.setUint32(4,36+len*2,true); wstr(8,"WAVE"); wstr(12,"fmt ");
-    view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,1,true);
-    view.setUint32(24,sampleRate,true); view.setUint32(28,sampleRate*2,true); view.setUint16(32,2,true); view.setUint16(34,16,true);
-    wstr(36,"data"); view.setUint32(40,len*2,true);
-    var peak=0,j,a; for(j=0;j<len;j++){ a=pcm[j]<0?-pcm[j]:pcm[j]; if(a>peak)peak=a; }
-    var gain=peak>0.0008?Math.min(0.97/peak,40):1;
-    var o=44,sm; for(j=0;j<len;j++){ sm=pcm[j]*gain; sm=sm>1?1:(sm<-1?-1:sm); view.setInt16(o,sm<0?sm*0x8000:sm*0x7FFF,true); o+=2; }
-    return URL.createObjectURL(new Blob([buf],{type:"audio/wav"}));
-  }
-
-  // ---------- listening ----------
-  micBtn.addEventListener("click", function(){ listening?stopListening():startListening(); });
-  async function startListening(){
-    clearErr();
-    if(mode==="reference" && !refSeq){ showErr("Record a reference first, or switch to the By pauses tab."); return; }
-    if(!(await ensureMic())) return;
-    smoothedDb=-100; pState="idle"; lastCountTime=-1e9; lastFeatureTime=0;
-    if(mode==="reference") initRefDP();
-    listening=true; micBtn.textContent="Stop"; micBtn.classList.add("on");
-    statusText.textContent="listening"; dot.classList.add("live"); requestWake();
-    listenLoop();
-  }
-  function stopListening(){
-    listening=false;
-    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
-    teardownMic();
-    micBtn.textContent="Start listening"; micBtn.classList.remove("on");
-    statusText.textContent="ready"; dot.classList.remove("live","hot");
-    inputLvl.style.width="0%"; inputLvl.classList.remove("hot");
-    matchLvl.style.width="0%"; matchLvl.classList.remove("hit");
-    inputState.textContent="silent"; inputState.classList.remove("on");
-    matchState.textContent="—"; matchState.classList.remove("on");
-    refPlaying=false; if(playRefBtn) playRefBtn.textContent="▶ Play"; try{refAudio.pause();}catch(e){}
-    releaseWake();
-  }
-  function listenLoop(){
+  function loop(){
     if(!listening) return;
     var now=performance.now();
-    var db=rawDb();
-    smoothedDb=smoothedDb+(db-smoothedDb)*0.3;
+    var db=rawDb(); smoothedDb=smoothedDb+(db-smoothedDb)*0.3;
 
     if(calibrating){
       if(smoothedDb>calMax) calMax=smoothedDb;
-      if(now>=calEnd){ calibrating=false; pThresholdDb=Math.max(-70,Math.min(-22,calMax+12)); store.set("pThr",pThresholdDb); syncPauses(); placeMarkers(); statusText.textContent="listening"; }
+      if(now>=calEnd){ calibrating=false; thresholdDb=Math.max(-70,Math.min(-22,calMax+12)); store.set("thr",thresholdDb); syncThr(); placeMarker(); statusText.textContent="listening"; }
     }
 
-    if(mode==="pauses"){
-      inputLvl.style.width=dbToPct(smoothedDb)+"%";
-      var loud=smoothedDb>pThresholdDb && !calibrating;
-      inputLvl.classList.toggle("hot",loud); dot.classList.toggle("hot",loud);
-      inputState.textContent=calibrating?"calibrating…":(loud?"playing":"silent"); inputState.classList.toggle("on",loud);
-      if(loud){ if(pState==="idle"){ pState="playing"; pBurstStart=now; } pLastLoud=now; }
-      else if(pState==="playing" && (now-pLastLoud)>pGapMs){
-        var dur=pLastLoud-pBurstStart; pState="idle";
-        if(dur>=pMinMs){ count++; registerRep("last rep "+(dur/1000).toFixed(1)+"s"); }
-      }
-    } else {
-      if(refPlaying){ rafId=requestAnimationFrame(listenLoop); return; }
-      if(now-lastFeatureTime>=HOP_MS){
-        var x=computeChroma();
-        var pct=dbToPct(smoothedDb), energetic=smoothedDb>pThresholdDb;
-        inputLvl.style.width=pct+"%"; inputLvl.classList.toggle("hot",energetic); dot.classList.toggle("hot",energetic);
-        inputState.textContent=energetic?"playing":"silent"; inputState.classList.toggle("on",energetic);
-        var sc=refStep(x);
-        scSmooth=scSmooth+(sc-scSmooth)*0.5;
-        matchLvl.style.width=(scSmooth*100)+"%";
-        var hit=scSmooth>=matchThreshold; matchLvl.classList.toggle("hit",hit);
-        matchState.textContent=Math.round(scSmooth*100)+"%"; matchState.classList.toggle("on",hit);
-        // a rep = one full traversal completing = a local PEAK in the match score
-        // count one rep at the completion peak, then reset the alignment so the score
-        // falls to zero and the next rep has to build from scratch (no stall, no fragment matches)
-        if(mArmed){
-          if(energetic && scSmooth>repPeak) repPeak=scSmooth;
-          if(repPeak>=matchThreshold && scSmooth<repPeak-0.04 && (now-lastCountTime)>refractoryMs){
-            count++; lastCountTime=now; registerRep("match "+Math.round(repPeak*100)+"%");
-            initRefDP(); mArmed=false;
-          }
-        } else if(scSmooth<matchThreshold-0.05){ mArmed=true; repPeak=0; }
-        lastFeatureTime=now;
-      }
+    inputLvl.style.width=dbToPct(smoothedDb)+"%";
+    var loud=smoothedDb>thresholdDb && !calibrating;
+    inputLvl.classList.toggle("hot",loud); dot.classList.toggle("hot",loud);
+    inputState.textContent=calibrating?"calibrating…":(loud?"playing":"silent"); inputState.classList.toggle("on",loud);
+
+    if(loud){ if(state==="idle"){ state="playing"; burstStart=now; } lastLoud=now; }
+    else if(state==="playing" && (now-lastLoud)>gapMs){
+      var dur=lastLoud-burstStart; state="idle";
+      if(dur>=minMs){ count++; registerRep("last rep "+(dur/1000).toFixed(1)+"s"); }
     }
-    rafId=requestAnimationFrame(listenLoop);
+    rafId=requestAnimationFrame(loop);
   }
 
   // ---------- count UI ----------
@@ -629,10 +273,10 @@
     countEl.classList.remove("bump"); void countEl.offsetWidth; countEl.classList.add("bump");
     lastrep.textContent=info; renderTally(); updateGoal();
   }
-  function resetCount(){ count=0; lastCountTime=-1e9; pState="idle"; scSmooth=0; mArmed=true; repPeak=0; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
+  function resetCount(){ count=0; state="idle"; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
   function updateGoal(){
     var done=count>=goal, remaining=Math.max(0,goal-count);
-    goalView.textContent=goal; goalNum.textContent=goal;
+    goalView.textContent=goal;
     if(count===0) goalline.innerHTML="goal <b>"+goal+"</b> · "+goal+" to go";
     else if(done) goalline.innerHTML="<b>"+count+" reps</b> — goal reached";
     else goalline.innerHTML="goal <b>"+goal+"</b> · "+remaining+" to go";
@@ -651,23 +295,34 @@
   }
 
   // ---------- controls ----------
+  micBtn.addEventListener("click", function(){ listening?stop():start(); });
   resetFront.addEventListener("click", resetCount);
-  function setGoal(g){ goal=Math.max(1,g); store.set("goal",goal); updateGoal(); }
-  $("goalUp").addEventListener("click", function(){ setGoal(goal+1); });
-  $("goalDown").addEventListener("click", function(){ setGoal(goal-1); });
 
-  function syncPauses(){
-    thrVal.textContent="−"+Math.abs(Math.round(pThresholdDb))+" dB"; $("thrSlider").value=pThresholdDb;
-    gapVal.textContent=(pGapMs/1000).toFixed(1)+" s"; $("gapSlider").value=(pGapMs/1000);
-    minVal.textContent=(pMinMs/1000).toFixed(1)+" s"; $("minSlider").value=(pMinMs/1000);
+  function setGoal(g, fromInput){
+    g=Math.max(1, Math.floor(g)||1); goal=g; store.set("goal",goal);
+    if(!fromInput) goalInput.value=goal;
+    updateGoal();
   }
-  function syncMatch(){ matchVal.textContent=matchThreshold.toFixed(2); $("matchSlider").value=matchThreshold; }
-  function placeMarkers(){ inputThr.style.left=dbToPct(pThresholdDb)+"%"; matchThr.style.left=(matchThreshold*100)+"%"; }
+  function holdRepeat(btn, fn){
+    var delay, rep;
+    function go(e){ if(e&&e.preventDefault) e.preventDefault(); fn(); delay=setTimeout(function(){ rep=setInterval(fn,90); },400); }
+    function stopHold(){ clearTimeout(delay); clearInterval(rep); }
+    btn.addEventListener("pointerdown", go);
+    btn.addEventListener("pointerup", stopHold);
+    btn.addEventListener("pointerleave", stopHold);
+    btn.addEventListener("pointercancel", stopHold);
+  }
+  holdRepeat($("goalUp"), function(){ setGoal(goal+1); });
+  holdRepeat($("goalDown"), function(){ setGoal(goal-1); });
+  goalInput.addEventListener("input", function(){ var v=parseInt(goalInput.value,10); if(!isNaN(v)) setGoal(v, true); });
+  goalInput.addEventListener("change", function(){ var v=parseInt(goalInput.value,10); setGoal(isNaN(v)?1:v); });
+  goalInput.addEventListener("focus", function(){ goalInput.select(); });
 
-  $("thrSlider").addEventListener("input", function(e){ pThresholdDb=parseInt(e.target.value,10); store.set("pThr",pThresholdDb); syncPauses(); placeMarkers(); });
-  $("gapSlider").addEventListener("input", function(e){ var s=parseFloat(e.target.value); pGapMs=s*1000; store.set("pGap",s); gapVal.textContent=s.toFixed(1)+" s"; });
-  $("minSlider").addEventListener("input", function(e){ var s=parseFloat(e.target.value); pMinMs=s*1000; store.set("pMin",s); minVal.textContent=s.toFixed(1)+" s"; });
-  $("matchSlider").addEventListener("input", function(e){ matchThreshold=parseFloat(e.target.value); store.set("matchThreshold",matchThreshold); syncMatch(); placeMarkers(); });
+  function syncThr(){ thrVal.textContent="−"+Math.abs(Math.round(thresholdDb))+" dB"; $("thrSlider").value=thresholdDb; }
+  function placeMarker(){ inputThr.style.left=dbToPct(thresholdDb)+"%"; }
+  $("thrSlider").addEventListener("input", function(e){ thresholdDb=parseInt(e.target.value,10); store.set("thr",thresholdDb); syncThr(); placeMarker(); });
+  $("gapSlider").addEventListener("input", function(e){ var s=parseFloat(e.target.value); gapMs=s*1000; store.set("gap",s); gapVal.textContent=s.toFixed(1)+" s"; });
+  $("minSlider").addEventListener("input", function(e){ var s=parseFloat(e.target.value); minMs=s*1000; store.set("min",s); minVal.textContent=s.toFixed(1)+" s"; });
   $("calBtn").addEventListener("click", function(){
     if(!listening){ showErr("Start listening first, then calibrate."); return; }
     clearErr(); calibrating=true; calMax=-100; calEnd=performance.now()+2000; statusText.textContent="calibrating…";
@@ -675,9 +330,11 @@
   $("doneBtn").addEventListener("click", function(){ $("settings").open=false; window.scrollTo({top:0,behavior:"smooth"}); });
 
   // ---------- init ----------
-  syncPauses(); syncMatch(); placeMarkers(); updateGoal(); renderTally();
-  if(mode==="reference") recState="needsRef";
-  layout();
+  syncThr(); placeMarker();
+  gapVal.textContent=(gapMs/1000).toFixed(1)+" s"; $("gapSlider").value=(gapMs/1000);
+  minVal.textContent=(minMs/1000).toFixed(1)+" s"; $("minSlider").value=(minMs/1000);
+  goalInput.value=goal; updateGoal(); renderTally();
+  $("ver").textContent="v"+VERSION;
 })();
 </script>
 </body>
