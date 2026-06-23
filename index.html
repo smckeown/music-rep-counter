@@ -238,10 +238,10 @@
       </div>
 
       <!-- pauses-mode settings -->
-      <div class="ctl pausesOnly">
+      <div class="ctl">
         <div class="row"><label>Sensitivity</label><span class="val" id="thrVal">−45 dB</span></div>
         <input type="range" id="thrSlider" min="-70" max="-20" value="-45" step="1">
-        <div class="hint">Where the threshold sits on the input meter. If quiet playing isn't counted, drag left; if room noise triggers it, drag right.</div>
+        <div class="hint">Sets the line between playing and silence on the input meter. Drag left if soft playing reads as silence, right if room noise reads as playing.</div>
         <button class="calbtn" id="calBtn">Calibrate from room silence</button>
       </div>
 
@@ -297,8 +297,9 @@
   // pauses engine
   var smoothedDb=-100, pState="idle", pBurstStart=0, pLastLoud=0, calibrating=false, calMax=-100, calEnd=0;
   // reference engine
-  var refFixed=null, refHead=null, headLen=12, refLenFrames=0, phraseMs=0, ringFrames=[], armed=true, lastCountTime=-1e9, refractoryMs=900, refPlaying=false;
-  var matching=false, nextCountTime=0, lowSince=0, lastTick=0;
+  // reference engine (streaming subsequence DTW)
+  var refSeq=null, refLenFrames=0, phraseMs=0, lastCountTime=-1e9, refPlaying=false;
+  var dpPrev=null, dpCur=null, lenPrev=null, lenCur=null, scSmooth=0, mPhase="peak", mPeak=0, mTrough=1, mEnergy=false;
   var recState="needsRef", tempFrames=[], tempLevels=[], tempPcm=[], recStart=0, recTimerId=null;
   // shared audio
   var listening=false, recording=false;
@@ -382,6 +383,32 @@
     return out;
   }
   function frameDist(a,b){ var d=0,i; for(i=0;i<12;i++) d+=a[i]*b[i]; var c=1-d; return c<0?0:c; }
+
+  // ----- streaming subsequence DTW: align the live stream against the full reference -----
+  // dpPrev[i] = best cost of aligning reference[0..i] to some run of live frames ending now.
+  // Row 0 is pinned to 0 every frame, so a match can begin at any moment (tempo-free).
+  function initRefDP(){
+    var M=refSeq?refSeq.length:0, i;
+    dpPrev=new Float64Array(M+1); dpCur=new Float64Array(M+1);
+    lenPrev=new Float64Array(M+1); lenCur=new Float64Array(M+1);
+    dpPrev[0]=0; for(i=1;i<=M;i++) dpPrev[i]=Infinity;
+    scSmooth=0; mPhase="peak"; mPeak=0; mTrough=1; mEnergy=false;
+  }
+  // feed one live chroma frame; returns match score (1 - average alignment cost), 0..1
+  function refStep(x){
+    var M=refSeq.length, i, c, best, bestLen;
+    dpCur[0]=0; lenCur[0]=0;
+    for(i=1;i<=M;i++){
+      c=frameDist(refSeq[i-1], x);
+      best=dpPrev[i-1]; bestLen=lenPrev[i-1];                       // diagonal
+      if(dpPrev[i]<best){ best=dpPrev[i]; bestLen=lenPrev[i]; }     // hold reference, advance live
+      if(dpCur[i-1]<best){ best=dpCur[i-1]; bestLen=lenCur[i-1]; }  // hold live, advance reference
+      dpCur[i]=c+best; lenCur[i]=bestLen+1;
+    }
+    var t=dpPrev; dpPrev=dpCur; dpCur=t; t=lenPrev; lenPrev=lenCur; lenCur=t;
+    var L=lenPrev[M]>0?lenPrev[M]:1, sc=1-dpPrev[M]/L;
+    return sc<0?0:(sc>1?1:sc);
+  }
   function dtwScore(A,B){
     var n=A.length, prev=new Float64Array(n+1), cur=new Float64Array(n+1), i,j,c,m;
     for(j=0;j<=n;j++) prev[j]=Infinity; prev[0]=0;
@@ -402,10 +429,10 @@
     refChip.classList.toggle("hidden", !refReady);
     counter.classList.toggle("hidden", inRecFlow);
     matchPanel.classList.toggle("hidden", mode!=="reference");
-    inputThr.classList.toggle("hidden", mode!=="pauses");
+    inputThr.classList.remove("hidden");
     document.querySelectorAll(".pausesOnly").forEach(function(el){ el.classList.toggle("hidden", mode!=="pauses"); });
     document.querySelectorAll(".refOnly").forEach(function(el){ el.classList.toggle("hidden", mode!=="reference"); });
-    micBtn.disabled = (mode==="reference" && !refFixed) || inRecFlow;
+    micBtn.disabled = (mode==="reference" && !refSeq) || inRecFlow;
     tabPauses.classList.toggle("active", mode==="pauses");
     tabReference.classList.toggle("active", mode==="reference");
     tabHint.textContent = mode==="pauses"
@@ -486,14 +513,11 @@
     if(recTimerId){ clearInterval(recTimerId); recTimerId=null; }
     if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
     stopPcmTap(); teardownMic();
-    recState = refFixed ? "ready" : "needsRef";
+    recState = refSeq ? "ready" : "needsRef";
   }
   reviewUse.addEventListener("click", function(){
     if(tempFrames.length<4){ showErr("That take was too short to use. Record the phrase again."); return; }
-    refLenFrames=tempFrames.length; refFixed=resampleFrames(tempFrames,N);
-    headLen=Math.max(6, Math.min(Math.round(refLenFrames*0.4), Math.round(1200/HOP_MS)));
-    refHead=resampleFrames(tempFrames.slice(0,headLen),HN);
-    refractoryMs=Math.max(500, phraseMs*0.6);
+    refSeq=tempFrames.slice(); refLenFrames=refSeq.length;
     refLenEl.textContent=(phraseMs/1000).toFixed(1)+"s";
     resetCount(); recState="ready"; teardownMic(); layout();
   });
@@ -504,7 +528,7 @@
     if(refAudio.paused){ refPlaying=true; refAudio.currentTime=0; refAudio.play(); playRefBtn.textContent="⏸ Stop"; }
     else { refAudio.pause(); }
   });
-  function endRefPlay(){ refPlaying=false; playRefBtn.textContent="▶ Play"; ringFrames=[]; matching=false; nextCountTime=0; lowSince=0; lastTick=0; }
+  function endRefPlay(){ refPlaying=false; playRefBtn.textContent="▶ Play"; if(refSeq) initRefDP(); }
   refAudio.addEventListener("ended", endRefPlay);
   refAudio.addEventListener("pause", endRefPlay);
 
@@ -528,10 +552,10 @@
   micBtn.addEventListener("click", function(){ listening?stopListening():startListening(); });
   async function startListening(){
     clearErr();
-    if(mode==="reference" && !refFixed){ showErr("Record a reference first, or switch to the By pauses tab."); return; }
+    if(mode==="reference" && !refSeq){ showErr("Record a reference first, or switch to the By pauses tab."); return; }
     if(!(await ensureMic())) return;
-    smoothedDb=-100; pState="idle"; ringFrames=[]; armed=true; lastCountTime=-1e9; lastFeatureTime=0; lastEvalTime=0;
-    matching=false; nextCountTime=0; lowSince=0; lastTick=0;
+    smoothedDb=-100; pState="idle"; lastCountTime=-1e9; lastFeatureTime=0;
+    if(mode==="reference") initRefDP();
     listening=true; micBtn.textContent="Stop"; micBtn.classList.add("on");
     statusText.textContent="listening"; dot.classList.add("live"); requestWake();
     listenLoop();
@@ -573,30 +597,28 @@
     } else {
       if(refPlaying){ rafId=requestAnimationFrame(listenLoop); return; }
       if(now-lastFeatureTime>=HOP_MS){
-        ringFrames.push(computeChroma()); if(ringFrames.length>refLenFrames) ringFrames.shift();
-        var pct=dbToPct(smoothedDb), loud2=pct>18;
-        inputLvl.style.width=pct+"%"; inputLvl.classList.toggle("hot",loud2); dot.classList.toggle("hot",loud2);
-        inputState.textContent=loud2?"playing":"silent"; inputState.classList.toggle("on",loud2);
-        lastFeatureTime=now;
-      }
-      if(now-lastEvalTime>=EVAL_MS && ringFrames.length>=Math.max(8, Math.floor(refLenFrames*0.6))){
-        var score=dtwScore(resampleFrames(ringFrames,N),refFixed);
-        matchLvl.style.width=(score*100)+"%";
-        var hit=score>=matchThreshold; matchLvl.classList.toggle("hit",hit);
-        matchState.textContent=Math.round(score*100)+"%"; matchState.classList.toggle("on",hit);
-        if(!matching){
-          if(score>=matchThreshold){ matching=true; lowSince=0; count++; registerRep("match "+Math.round(score*100)+"%"); nextCountTime=now+phraseMs; lastTick=now; }
+        var x=computeChroma();
+        var pct=dbToPct(smoothedDb), energetic=smoothedDb>pThresholdDb;
+        inputLvl.style.width=pct+"%"; inputLvl.classList.toggle("hot",energetic); dot.classList.toggle("hot",energetic);
+        inputState.textContent=energetic?"playing":"silent"; inputState.classList.toggle("on",energetic);
+        var sc=refStep(x);
+        scSmooth=scSmooth+(sc-scSmooth)*0.5;
+        matchLvl.style.width=(scSmooth*100)+"%";
+        var hit=scSmooth>=matchThreshold; matchLvl.classList.toggle("hit",hit);
+        matchState.textContent=Math.round(scSmooth*100)+"%"; matchState.classList.toggle("on",hit);
+        // a rep = one full traversal completing = a local PEAK in the match score
+        if(mPhase==="peak"){
+          if(energetic) mEnergy=true;
+          if(scSmooth>mPeak) mPeak=scSmooth;
+          else if(scSmooth<mPeak-0.10){
+            if(mPeak>=matchThreshold && mEnergy && (now-lastCountTime)>350){ count++; lastCountTime=now; registerRep("match "+Math.round(mPeak*100)+"%"); }
+            mPhase="trough"; mTrough=scSmooth;
+          }
         } else {
-          if(score<matchThreshold-0.12){
-            if(!lowSince) lowSince=now;
-            else if(now-lowSince>Math.min(900,phraseMs*0.4)){
-              matching=false;
-              if(now-lastTick>=phraseMs*0.85){ count++; registerRep("match "+Math.round(score*100)+"%"); lastTick=now; }
-            }
-          } else lowSince=0;
-          if(matching && now>=nextCountTime){ if(score>=matchThreshold-0.05){ count++; registerRep("match "+Math.round(score*100)+"%"); lastTick=now; } nextCountTime+=phraseMs; }
+          if(scSmooth<mTrough) mTrough=scSmooth;
+          else if(scSmooth>mTrough+0.10){ mPhase="peak"; mPeak=scSmooth; mEnergy=energetic; }
         }
-        lastEvalTime=now;
+        lastFeatureTime=now;
       }
     }
     rafId=requestAnimationFrame(listenLoop);
@@ -608,7 +630,7 @@
     countEl.classList.remove("bump"); void countEl.offsetWidth; countEl.classList.add("bump");
     lastrep.textContent=info; renderTally(); updateGoal();
   }
-  function resetCount(){ count=0; armed=true; lastCountTime=-1e9; pState="idle"; matching=false; nextCountTime=0; lowSince=0; lastTick=0; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
+  function resetCount(){ count=0; lastCountTime=-1e9; pState="idle"; scSmooth=0; mPhase="peak"; mPeak=0; mTrough=1; mEnergy=false; countEl.textContent="0"; countEl.classList.remove("done"); lastrep.textContent=""; renderTally(); updateGoal(); }
   function updateGoal(){
     var done=count>=goal, remaining=Math.max(0,goal-count);
     goalView.textContent=goal; goalNum.textContent=goal;
@@ -648,7 +670,7 @@
   $("minSlider").addEventListener("input", function(e){ var s=parseFloat(e.target.value); pMinMs=s*1000; store.set("pMin",s); minVal.textContent=s.toFixed(1)+" s"; });
   $("matchSlider").addEventListener("input", function(e){ matchThreshold=parseFloat(e.target.value); store.set("matchThreshold",matchThreshold); syncMatch(); placeMarkers(); });
   $("calBtn").addEventListener("click", function(){
-    if(!listening || mode!=="pauses"){ showErr("Start listening on the By pauses tab first, then calibrate."); return; }
+    if(!listening){ showErr("Start listening first, then calibrate."); return; }
     clearErr(); calibrating=true; calMax=-100; calEnd=performance.now()+2000; statusText.textContent="calibrating…";
   });
   $("doneBtn").addEventListener("click", function(){ $("settings").open=false; window.scrollTo({top:0,behavior:"smooth"}); });
