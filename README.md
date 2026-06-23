@@ -1,4 +1,4 @@
-wser-based tool that counts how many times you play a phrase while practising, helping you to keep track when your mind starts wandering!
+Browser-based tool that counts how many times you play a phrase while practising, helping you to keep track when your mind starts wandering!
 
 **Live app:** [https://smckeown.github.io/music-rep-counter/](https://smckeown.github.io/music-rep-counter/)
 
